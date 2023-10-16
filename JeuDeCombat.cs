@@ -45,6 +45,10 @@ class Damager : Personaje
         damageReflected += damage;
     }
 
+    public void Defend(Personaje enemy, int pv){
+
+    }
+
 
 
 
@@ -76,9 +80,24 @@ partial class Program
             Console.WriteLine("1 - Healer");
             Console.WriteLine("2 - Tank");
             Console.WriteLine("3 - Damager");
+            characterChoice = int.Parse(Console.ReadLine());
+            switch (characterChoice){
+            case 1:
+                // Instantiate Healer
+                break;
+
+            case 2:
+                // Instantiate Tank
+                break;
+
+            case 3:
+                Damager dam = new Damager(2, 3, 2, 0);
+                break;
+
+            }
+            Console.WriteLine("Vous avez choisi le personnage: Damager");
             Console.Clear();
         }
-
         while(!endGame){
 
             while(!deadPlayer){
@@ -88,6 +107,7 @@ partial class Program
                 Console.WriteLine('3 - Action spéciale');
                 int action = int.Parse(Console.ReadLine());
                 if(action == 1){
+
                     
                 }
 
@@ -103,34 +123,4 @@ partial class Program
 
 
 
-/*
-ia :
 
-rdm: 
-Random rdm = new Random();
-action = rdm.Next(1,3);
-1=attack
-2=defense
-(%+ pour attack)
-
-damager:
-if ennemy = tank & vie = 1 :
-special
-else
-rdm
-
-
-healer:
-
-if vie <= 2 :
-heal
-else
-rdm
-
-tank:
-if vie >= 3 :
-special
-else
-rdm
-
-*/

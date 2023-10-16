@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -40,43 +41,87 @@ class Damager : Personaje
 }
 
 
-
-
-
-
-
-
-
-
 partial class Program
 {
-
     static void Main()
     {
+        Program program = new Program();
+        program.Interface();
+    }
 
-        int cursorLocation = 0;
-        int characterChoice = 0;
+    public List<(int x, int y)> buttonsPositions = new List<(int x, int y)>();
+    public (int x, int y) cursorPosition = (0, 2);
+    public int characterChoice = -1;
 
+    void Interface()
+    {
         // Boucle Menu principale
         while(characterChoice == -1)
         {
+            Console.Clear();
+            buttonsPositions.Clear();
+
             Console.WriteLine("################################");
             Console.WriteLine("#         JEU DE COMBAT        #");
             Console.WriteLine("#              v0.1            #");
             Console.WriteLine("################################");
             Console.WriteLine("\nVeuillez choisiez votre classe:");
-            Console.WriteLine("1 - Healer");
-            Console.WriteLine("2 - Tank");
-            Console.WriteLine("3 - Damager");
-            Console.Clear();
+            Console.WriteLine("         " + Button((0,2), "Damager"));
+            Console.WriteLine("         " + Button((0,1), "Healer"));
+            Console.WriteLine("         " + Button((0,0), "Tank"));
+
+            if (WaitForInput())
+                characterChoice = Math.Abs(cursorPosition.y - 3);
         }
+
+        // characterChoice devrais correspondre a 1, 2 ou 3 (Damager, Healer ou tank)
+        Console.WriteLine(characterChoice);
     }
+
+    string Button((int x, int y) position, string label)
+    {
+        string labelDisplay = "";
+
+        // Check if the button is selected
+        bool selected = position == cursorPosition;
+        labelDisplay += selected ? ">" : " ";
+        labelDisplay += label;
+        labelDisplay += selected ? "<" : " ";
+
+        // Register it and return the display string 
+        buttonsPositions.Add(position);
+        return labelDisplay;
+    }
+
+    // Change the position of the cursor on the interface
+    // Return true if pressed enter
+    public bool WaitForInput()
+    {
+        (int x, int y) nextPos = cursorPosition;
+        string input = Console.ReadKey().Key.ToString();
+
+        switch (input)
+        {
+            case "RightArrow":
+                nextPos.x++;
+                break;
+            case "LeftArrow":
+                nextPos.x--;
+                break;
+            case "UpArrow":
+                nextPos.y++;
+                break;
+            case "DownArrow":
+                nextPos.y--;
+                break;
+            case "Spacebar":
+                return true;
+        }
+        
+        // Check if next cursor position is in bound
+        if (buttonsPositions.Contains(nextPos))
+            cursorPosition = nextPos;
+
+        return false;
     }
 }
-
-
-
-
-
-
-

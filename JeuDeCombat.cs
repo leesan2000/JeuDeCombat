@@ -63,6 +63,7 @@ partial class Program
         bool deadPlayer = false;
         bool deadCPU = false;
         int cursorLocation = 0;
+        int characterChoice = 0;
 
         // Boucle Menu principale
         while(characterChoice == -1)
@@ -93,8 +94,8 @@ partial class Program
 
         }
     }
-    }
 }
+
 
 
 

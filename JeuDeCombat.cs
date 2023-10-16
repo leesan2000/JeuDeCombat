@@ -41,8 +41,10 @@ class Damager : Personaje
 
 
 
-class Program
+partial class Program
 {
+
+    int choix;
     static void Main()
     {
 

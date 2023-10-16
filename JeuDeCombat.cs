@@ -21,9 +21,9 @@ class Personaje{
     
     public Personaje(int type, int pv, int force)
     {
-        type = type;
-        pv = pv;
-        force = force;
+        this.type = type;
+        this.pv = pv;
+        this.force = force;
     }
 
     public void getDamaged(int damage){
@@ -48,6 +48,8 @@ class Damager : Personaje
     public new void Attack(Personaje enemy, int damage)
     {
         //base.Attack(enemy, damage);
+        //enemy.pv -= damage;
+        
         damageReflected += damage;
     }
 
@@ -141,4 +143,5 @@ partial class Program
 
         return false;
     }
+}
 }

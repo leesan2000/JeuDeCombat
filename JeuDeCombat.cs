@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -50,28 +48,25 @@ class Damager : Personaje
 
 
 
->>>>>>> 465a80bd6bb456e2d3669d387467bfcce1678001
 partial class Program
 {
-    int characterChoice = 0;
 
+    int choix;
     static void Main()
     {
 
-        int cursorLocation = 0;
 
-        // Boucle Menu principale
-        while(characterChoice == -1)
-        {
-            Console.WriteLine("################################");
-            Console.WriteLine("#         JEU DE COMBAT        #");
-            Console.WriteLine("#              v0.1            #");
-            Console.WriteLine("################################");
-            Console.WriteLine("\nVeuillez choisiez votre classe:");
-            Console.WriteLine("1 - Healer");
-            Console.WriteLine("2 - Tank");
-            Console.WriteLine("3 - Damager");
-            Console.Clear();
+        Console.WriteLine("Best Combat Game Ever Made");
+        Console.WriteLine("Bienvenue");
+        Console.WriteLine("Veuillez choisir le personnage:");
+        Console.WriteLine("1 -  Healer");
+        Console.WriteLine("2 - Tank");
+        Console.WriteLine("3 - Damager");
+
+        int choix = int.Parse(Console.ReadLine());
+
+        if(choix == 1){
+            Damager dam = new Damager(1, 3, 2, 0); 
         }
     }
 }
@@ -79,30 +74,6 @@ partial class Program
 
 
 
-public class Damager{
-
-    int vie = 2;
-    int att = 3;
-
-    int special;
-
-
-    public void DamagerA()
-    {
 
 
 
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-}

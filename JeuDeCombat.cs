@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 
 
-class Program
+partial class Program
 {
 
-    int choix;
+    
     static void Main()
     {
 
@@ -19,7 +19,7 @@ class Program
         Console.WriteLine("2 - Tank");
         Console.WriteLine("3 - Damager");
 
-        choix = int.Parse(Console.ReadLine());
+        int choix = int.Parse(Console.ReadLine());
 
 
 

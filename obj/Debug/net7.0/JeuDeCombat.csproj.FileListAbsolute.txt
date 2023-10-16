@@ -2,3 +2,13 @@ C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCo
 C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.AssemblyInfoInputs.cache
 C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.AssemblyInfo.cs
 C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.csproj.CoreCompileInputs.cache
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\bin\Debug\net7.0\JeuDeCombat.exe
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\bin\Debug\net7.0\JeuDeCombat.deps.json
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\bin\Debug\net7.0\JeuDeCombat.runtimeconfig.json
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\bin\Debug\net7.0\JeuDeCombat.dll
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\bin\Debug\net7.0\JeuDeCombat.pdb
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.dll
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\refint\JeuDeCombat.dll
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.pdb
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.genruntimeconfig.cache
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\ref\JeuDeCombat.dll

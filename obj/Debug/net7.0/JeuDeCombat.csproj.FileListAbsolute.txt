@@ -1,0 +1,4 @@
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.AssemblyInfoInputs.cache
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.AssemblyInfo.cs
+C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.csproj.CoreCompileInputs.cache

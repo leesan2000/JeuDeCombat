@@ -19,7 +19,7 @@ class Program
         Console.WriteLine("2 - Tank");
         Console.WriteLine("3 - Damager");
 
-        choix = int.Parse(Console.ReadLine())''
+        choix = int.Parse(Console.ReadLine());
 
 
 

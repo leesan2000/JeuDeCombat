@@ -55,6 +55,7 @@ partial class Program
     {
 
         int cursorLocation = 0;
+        int characterChoice = 0;
 
         // Boucle Menu principale
         while(characterChoice == -1)

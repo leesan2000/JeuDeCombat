@@ -25,20 +25,37 @@ class Personaje{
         pv = pv;
         force = force;
     }
+
+    public void getDamaged(int damage){
+        pv = pv - damage;
+    }
+
 }
 
 class Damager : Personaje
 {
     public int specialAttack { get; set; }
-    private int degatsEnRetour { get; set; }    
+    private int damageReflected { get; set; }    
 
     public Damager(int type, int pv, int force, int special) : base(type, pv, force)
     {
         specialAttack = special;
-        degatsEnRetour = 0;
+        damageReflected = 0;
 
     }
-}
+
+
+    public new void Attack(Personaje enemy, int damage)
+    {
+        //base.Attack(enemy, damage);
+        damageReflected += damage;
+    }
+
+
+
+    public void Defend(Personaje enemy, int pv){
+
+    }
 
 
 partial class Program

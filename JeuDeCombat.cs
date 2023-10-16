@@ -78,6 +78,7 @@ partial class Program
             Console.WriteLine("3 - Damager");
             Console.Clear();
         }
+
         while(!endGame){
 
             while(!deadPlayer){
@@ -102,4 +103,34 @@ partial class Program
 
 
 
+/*
+ia :
 
+rdm: 
+Random rdm = new Random();
+action = rdm.Next(1,3);
+1=attack
+2=defense
+(%+ pour attack)
+
+damager:
+if ennemy = tank & vie = 1 :
+special
+else
+rdm
+
+
+healer:
+
+if vie <= 2 :
+heal
+else
+rdm
+
+tank:
+if vie >= 3 :
+special
+else
+rdm
+
+*/

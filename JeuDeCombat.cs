@@ -4,7 +4,14 @@ using System.Collections.Generic;
 
 
 
+/*
+Type :
 
+1 : Damager (3 2)
+2 : Healer (4 1)
+3 : Tank (5 1)
+
+*/
 
 class Personaje{
     public int type;

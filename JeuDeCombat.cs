@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualBasic.FileIO;
 
 
 
@@ -18,6 +19,8 @@ class Personaje{
     public int type;
     public int pv;
     public int force;
+
+    private bool isDefending = false;
     
     public Personaje(int type, int pv, int force)
     {
@@ -27,39 +30,76 @@ class Personaje{
     }
 
     public void getDamaged(int damage){
-        pv = pv - damage;
+        this.pv -= damage;
+    }
+
+    public void Attack(Personaje enemy)
+    {
+        if (!isDefending)
+        {
+        enemy.pv -= this.force;
+        }
+        else
+        {
+            this.isDefending = false;
+        }
+    }
+
+    public void Defend()
+    {
+        this.isDefending = true;
     }
 
 }
 
 class Damager : Personaje
 {
-    public int specialAttack { get; set; }
-    private int damageReflected { get; set; }    
+    public int DamageReflected { get; set; } 
 
-    public Damager(int type, int pv, int force, int special) : base(type, pv, force)
+    protected static int _type  = 1;
+    protected static int _pv = 3;
+    protected static int _force = 2;  
+
+    public Damager() : base(_type, _pv, _force)
     {
-        specialAttack = special;
-        damageReflected = 0;
-
+        DamageReflected = 0;
     }
 
-
-    public void Attack(Personaje enemy, int damage)
+    public void special(Personaje enemy, int damageReceive)
     {
-        //base.Attack(enemy, damage);
-        //enemy.pv -= damage;
-        
-        damageReflected += damage;
+        base.getDamaged(damageReceive);
+        enemy.getDamaged(damageReceive);
     }
+}
 
+class Healer : Personaje
+{
+    protected static int _type  = 2;
+    protected static int _pv = 4;
+    protected static int _force = 1;  
 
+    public Healer() : base(_type, _pv, _force) {}
 
-    public void Defend(Personaje enemy, int pv){
-
+    public void special()
+    {
+        base.getDamaged(-2);
     }
+}
+class Tank : Personaje
+{
+    protected static int _type  = 3;
+    protected static int _pv = 5;
+    protected static int _force = 1;  
 
+    public Tank() : base(_type, _pv, _force) {}
 
+    public void special(Personaje enemy, int force)
+    {
+        base.getDamaged(1);
+        enemy.getDamaged(1);
+        enemy.getDamaged(1);
+    }
+}
 partial class Program
 {
     static void Main()
@@ -95,6 +135,20 @@ partial class Program
 
         // characterChoice devrais correspondre a 1, 2 ou 3 (Damager, Healer ou tank)
         Console.WriteLine(characterChoice);
+
+        // Combat
+
+
+        
+        if (characterChoice == 1)
+        {
+            var player = new Damager();
+        }
+        
+
+        
+       //
+
     }
 
     string Button((int x, int y) position, string label)
@@ -144,7 +198,7 @@ partial class Program
         return false;
     }
 }
-}
+
 
 /*
 ia :

@@ -29,15 +29,21 @@ class Personaje{
 class Damager : Personaje
 {
     public int specialAttack { get; set; }
-    private int degatsEnRetour { get; set; }    
+    private int damageReflected { get; set; }    
 
     public Damager(int type, int pv, int force, int special) : base(type, pv, force)
     {
         specialAttack = special;
-        degatsEnRetour = 0;
+        damageReflected = 0;
 
     }
-}
+
+
+    public new void Attack(Personaje enemy, int damage)
+    {
+        base.Attack(enemy, damage);
+        damageReflected += damage;
+    }
 
 
 
@@ -53,7 +59,9 @@ partial class Program
 
     static void Main()
     {
-
+        bool endGame = false;
+        bool deadPlayer = false;
+        bool deadCPU = false;
         int cursorLocation = 0;
 
         // Boucle Menu principale
@@ -68,6 +76,21 @@ partial class Program
             Console.WriteLine("2 - Tank");
             Console.WriteLine("3 - Damager");
             Console.Clear();
+        }
+        while(!endGame){
+
+            while(!deadPlayer){
+                Console.WriteLine('Actions possibles:');
+                Console.WriteLine('1 - Attaquer');
+                Console.WriteLine('2 - Défendre');
+                Console.WriteLine('3 - Action spéciale');
+                int action = int.Parse(Console.ReadLine());
+                if(action == 1){
+                    
+                }
+
+            }
+
         }
     }
     }

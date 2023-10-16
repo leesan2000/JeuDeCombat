@@ -51,23 +51,25 @@ class Damager : Personaje
 partial class Program
 {
 
-    int choix;
     static void Main()
     {
 
+        int cursorLocation = 0;
 
-        Console.WriteLine("Best Combat Game Ever Made");
-        Console.WriteLine("Bienvenue");
-        Console.WriteLine("Veuillez choisir le personnage:");
-        Console.WriteLine("1 -  Healer");
-        Console.WriteLine("2 - Tank");
-        Console.WriteLine("3 - Damager");
-
-        int choix = int.Parse(Console.ReadLine());
-
-        if(choix == 1){
-            Damager dam = new Damager(1, 3, 2, 0); 
+        // Boucle Menu principale
+        while(characterChoice == -1)
+        {
+            Console.WriteLine("################################");
+            Console.WriteLine("#         JEU DE COMBAT        #");
+            Console.WriteLine("#              v0.1            #");
+            Console.WriteLine("################################");
+            Console.WriteLine("\nVeuillez choisiez votre classe:");
+            Console.WriteLine("1 - Healer");
+            Console.WriteLine("2 - Tank");
+            Console.WriteLine("3 - Damager");
+            Console.Clear();
         }
+    }
     }
 }
 

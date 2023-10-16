@@ -71,8 +71,8 @@ partial class Program
             Console.Clear();
         }
     }
-    }
 }
+
 
 
 

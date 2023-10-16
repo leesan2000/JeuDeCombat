@@ -12,3 +12,10 @@ C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\refint\
 C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.pdb
 C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.genruntimeconfig.cache
 C:\Users\jolan\Documents\GitHub\jeuDeCombat\JeuDeCombat\obj\Debug\net7.0\ref\JeuDeCombat.dll
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.AssemblyInfoInputs.cache
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.AssemblyInfo.cs
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.csproj.CoreCompileInputs.cache
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.dll
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\refint\JeuDeCombat.dll
+C:\Users\Dorito\Desktop\Stuff\Cours\BaseCsharp\JeuDeCombat\obj\Debug\net7.0\JeuDeCombat.pdb

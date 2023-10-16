@@ -1,31 +1,28 @@
 using System;
 using System.Collections.Generic;
 
-
-
-
 partial class Program
 {
+    int characterChoice = 0;
 
-    
     static void Main()
     {
 
-        // aeaea
-        Console.WriteLine("Best Combat Game Ever Made");
-        Console.WriteLine("Bienvenue");
-        Console.WriteLine("Veuillez choisir le personnage:");
-        Console.WriteLine("1 -  Healer");
-        Console.WriteLine("2 - Tank");
-        Console.WriteLine("3 - Damager");
+        int cursorLocation = 0;
 
-        int choix = int.Parse(Console.ReadLine());
-
-
-
-
-
-
+        // Boucle Menu principale
+        while(characterChoice == -1)
+        {
+            Console.WriteLine("################################");
+            Console.WriteLine("#         JEU DE COMBAT        #");
+            Console.WriteLine("#              v0.1            #");
+            Console.WriteLine("################################");
+            Console.WriteLine("\nVeuillez choisiez votre classe:");
+            Console.WriteLine("1 - Healer");
+            Console.WriteLine("2 - Tank");
+            Console.WriteLine("3 - Damager");
+            Console.Clear();
+        }
     }
 }
 

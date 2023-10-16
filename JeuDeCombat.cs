@@ -24,6 +24,11 @@ class Personaje{
         pv = pv;
         force = force;
     }
+
+    public void getDamaged(int damage){
+        pv = pv - damage;
+    }
+
 }
 
 class Damager : Personaje
@@ -41,9 +46,11 @@ class Damager : Personaje
 
     public new void Attack(Personaje enemy, int damage)
     {
-        base.Attack(enemy, damage);
+        //base.Attack(enemy, damage);
         damageReflected += damage;
     }
+
+
 
     public void Defend(Personaje enemy, int pv){
 
@@ -68,6 +75,8 @@ partial class Program
         bool deadCPU = false;
         int cursorLocation = 0;
         int characterChoice = 0;
+        Personaje player = null;
+        Personaje enemy = null;
 
         // Boucle Menu principale
         while(characterChoice == -1)
@@ -91,7 +100,8 @@ partial class Program
                 break;
 
             case 3:
-                Damager dam = new Damager(2, 3, 2, 0);
+                player = new Damager(2, 3, 2, 0);
+                enemy = new Damager(2, 3, 2, 0);
                 break;
 
             }
@@ -101,21 +111,26 @@ partial class Program
         while(!endGame){
 
             while(!deadPlayer){
-                Console.WriteLine('Actions possibles:');
-                Console.WriteLine('1 - Attaquer');
-                Console.WriteLine('2 - Défendre');
-                Console.WriteLine('3 - Action spéciale');
+                Console.WriteLine("Actions possibles:");
+                Console.WriteLine("1 - Attaquer");
+                Console.WriteLine("2 - Défendre");
+                Console.WriteLine("3 - Action spéciale");
                 int action = int.Parse(Console.ReadLine());
                 if(action == 1){
+                    enemy.getDamaged(player.force);
+                    Console.WriteLine("Has realizado {0} pts de daño al enemigo!", player.force);
+                    Console.WriteLine("Vida actual del enemigo: {0}", enemy.pv);
 
                     
                 }
-
             }
-
         }
     }
 }
+}
+
+
+
 
 
 

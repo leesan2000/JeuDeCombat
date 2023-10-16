@@ -20,9 +20,9 @@ class Personaje{
     
     public Personaje(int type, int pv, int force)
     {
-        type = type;
-        pv = pv;
-        force = force;
+        this.type = type;
+        this.pv = pv;
+        this.force = force;
     }
 
     public void getDamaged(int damage){
@@ -47,6 +47,8 @@ class Damager : Personaje
     public new void Attack(Personaje enemy, int damage)
     {
         //base.Attack(enemy, damage);
+        //enemy.pv -= damage;
+        
         damageReflected += damage;
     }
 
@@ -139,3 +141,60 @@ partial class Program
 
 
 
+/*
+ia :
+
+rdm:  (((((
+
+Random rdm = new Random();
+action = rdm.Next(1,4);
+
+if (action == 3)
+{
+    defense;
+}
+else
+{
+    attack;
+}
+
+
+(%+ pour attack)
+
+)))))
+
+damager:
+
+if (ennemy = tank && vie = 1)
+{
+    special;
+}
+else
+{
+    rdm;
+}
+
+
+healer:
+
+if (vie <= 2)
+{
+    heal;
+}
+else
+{
+    rdm;
+}
+
+tank:
+
+if (vie >= 3)
+{
+    special
+}
+else
+{
+    rdm;
+}
+
+*/

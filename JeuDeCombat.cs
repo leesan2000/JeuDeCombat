@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using Microsoft.VisualBasic.FileIO;
 
 
 
@@ -49,6 +49,7 @@ class Personaje{
     {
         this.isDefending = true;
     }
+
 
 }
 
@@ -112,6 +113,13 @@ partial class Program
     public (int x, int y) cursorPosition = (0, 2);
     public int characterChoice = -1;
 
+    public bool endGame;
+    public bool deadPlayer;
+    public bool deadCPU;
+
+    Personaje player = null;
+    Personaje enemy = null;
+
     void Interface()
     {
         // Boucle Menu principale
@@ -135,6 +143,8 @@ partial class Program
 
         // characterChoice devrais correspondre a 1, 2 ou 3 (Damager, Healer ou tank)
         Console.WriteLine(characterChoice);
+
+
 
         // Combat
 
@@ -220,7 +230,7 @@ else
 
 damager:
 
-if (ennemy == 3 && vie = 1)
+if (vie = 1)
 {
     special;
 }

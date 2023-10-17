@@ -120,6 +120,8 @@ partial class Program
     Personaje player = null;
     Personaje enemy = null;
 
+    int combatAction = 0;
+
     void Interface()
     {
         // Boucle Menu principale
@@ -166,13 +168,15 @@ partial class Program
 
         while(!endGame){
 
-            while(!deadPlayer){
+            if(!deadCPU){
                 Console.WriteLine("Actions possibles:");
                 Console.WriteLine("1 - Attaquer");
                 Console.WriteLine("2 - Défendre");
                 Console.WriteLine("3 - Action spéciale");
-                int action = int.Parse(Console.ReadLine());
-                if(action == 1){
+                combatAction = int.Parse(Console.ReadLine());
+            }
+            switch (combatAction){
+                case 1: //Action 1: Attack
                     enemy.getDamaged(player.force);
                     if(enemy.pv > 0){
                         Console.WriteLine("Damage dealt to the enemy: {0}",player.force);
@@ -182,20 +186,19 @@ partial class Program
                         if(enemy.pv <= 0){
                             Console.WriteLine("Enemy is dead!");
                             deadCPU = true;
+                            endGame = true;
                         }
                     }
-
-
-
-                    
-                }
-            }
+                    break;
+                case 2: //Action 2: Defend
+                    Console.WriteLine("You have chosen to defend yourself!");
+                    player.Defend();
+                    break;
+                case 3:
+                    player = new Tank();
+                    break;
+            }   
         }
-        
-
-        
-       //
-
     }
 
     string Button((int x, int y) position, string label)

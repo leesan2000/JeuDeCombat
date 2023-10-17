@@ -145,10 +145,6 @@ partial class Program
             var player = new Damager();
         }
         
-
-        
-       //
-
     }
 
     string Button((int x, int y) position, string label)

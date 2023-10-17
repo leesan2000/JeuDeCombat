@@ -17,8 +17,8 @@ Type :
 
 class Personaje{
     public int type;
-    public int pv;
-    public int force;
+    public int pv = 10;
+    public int force = 0;
 
     private bool isDefending = false;
     
@@ -30,14 +30,9 @@ class Personaje{
     }
 
     public void getDamaged(int damage){
-        this.pv -= damage;
-    }
-
-    public void Attack(Personaje enemy)
-    {
         if (!isDefending)
         {
-        enemy.pv -= this.force;
+        this.pv -= damage;
         }
         else
         {
@@ -119,14 +114,16 @@ partial class Program
     public bool deadPlayer;
     public bool deadCPU;
 
-    Personaje player = null;
-    Personaje enemy = null;
+    Personaje? player = null;
+    Personaje? enemy = null;
 
     int combatAction = 0;
 
     int cpuChoice = 0;
     string cpuString = "";
     string playerString = "";
+    string iaLastAction = "Ready to fight !";
+    public float iaDifficulty = 50f;
 
     void Interface()
     {
@@ -171,19 +168,23 @@ partial class Program
         
         switch (characterChoice)
         {
-        case 1:
-            player = new Damager();
-            playerString = "Damager";
-            break;
-        case 2:
-            player = new Healer();
-            playerString = "Healer";
-            
-            break;
-        case 3:
-            player = new Tank();
-            playerString = "Tank";
-            break;
+            case 1:
+                player = new Damager();
+                playerString = "Damager";
+                break;
+            case 2:
+                player = new Healer();
+                playerString = "Healer";
+                
+                break;
+            case 3:
+                player = new Tank();
+                playerString = "Tank";
+                break;
+            default:
+                player = new Tank();
+                playerString = "Tank";
+                break;
         }
         
         switch(IAChoice(cpuChoice)){
@@ -199,12 +200,16 @@ partial class Program
                 enemy = new Tank();
                 cpuString = "Tank";
                 break;
+            default:
+                enemy = new Tank();
+                cpuString = "Tank";
+                break;
         }
 
         cursorPosition = (0, 0);
         while(!endGame){
 
-            while(!deadCPU || !deadPlayer)
+            while(!deadCPU && !deadPlayer)
             {
                 int action = -1;
                 while (action == -1)
@@ -213,18 +218,33 @@ partial class Program
                     Console.Clear();
                     buttonsPositions.Clear();
 
-                    Console.WriteLine("Joueur : {0}", playerString);
-                    Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
-                    Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
-                    Console.WriteLine("\nEnemie : {0}", cpuString);
+                    
+
+
+                    if(player.pv > 0){ //If the player isn't dead
+                        Console.WriteLine("Joueur : {0}", playerString);
+                        Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
+                        Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
+                        Console.WriteLine("\nEnemie : {0}", cpuString);
+                    }else{
+                        if(player.pv < 0){ //If the player dies (HP = 0)
+                            Console.WriteLine("Player is dead!");
+                            deadPlayer = true;
+                            endGame = true;
+                        }
+                    }
+
+
                     if(enemy.pv > 0){ //If the enemy isn't dead
                         Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
                         Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
+                        Console.WriteLine(iaLastAction);
                     }else{
                         if(enemy.pv <= 0){ //If the enemy dies (HP = 0)
                             Console.WriteLine("Enemy is dead!");
                             deadCPU = true;
                             endGame = true;
+                            break;
                         }
                     }
                     Console.WriteLine("\n          Actions possibles:");
@@ -251,10 +271,10 @@ partial class Program
                     {
                         player.special(enemy, player.force);
                     }
-
-                    IATurn();
                 }
+                IATurn(enemy, player);
             }
+            endGame = true;
         }
     }
 
@@ -311,7 +331,7 @@ partial class Program
 
     // Change the position of the cursor on the interface
     // Return true if pressed enter
-    public bool WaitForInput()
+    bool WaitForInput()
     {
         (int x, int y) nextPos = cursorPosition;
         string input = Console.ReadKey().Key.ToString();
@@ -343,74 +363,95 @@ partial class Program
         return false;
     }
 
-    public int IAChoice(int choice){
+    int IAChoice(int choice){
         Random rdm = new Random();
         choice = rdm.Next(1,4);
         return choice;
         
     }
 
-    public void IATurn()
+    void IATurn(Personaje enemy, Personaje player)
     {
+        // Prédisposition pour attaques spéciales ia else : randomAction
+        switch (enemy.type)
+            {
+            case 1:
+                if (enemy.pv == 1)
+                {
+                    enemy.special(player, enemy.force);
+                    iaLastAction = "Special attack from the enemy " + cpuString + " !";
+                    return;
+                }
+                else
+                {
+                    goto randomAction;
+                }
+
+            case 2:
+                if (enemy.pv <= 2)
+                {
+                    Random _rdm = new Random();
+                    float choice = _rdm.Next(0, 100);
+                    double mantissa = (_rdm.NextDouble() * 2.0f) - 1.0f;
+                    if (choice + mantissa <= iaDifficulty)
+                    {
+                        enemy.special(player, enemy.force);
+                        iaLastAction = "Special attack from the enemy " + cpuString + " !";
+                        return;
+                    }
+                    else 
+                    {
+                        goto randomAction;
+                    }
+                }
+                else
+                {
+                    goto randomAction;
+                }
+
+            case 3:
+                if (enemy.pv >= 3)
+                {
+                    Random _rdm = new Random();
+                    float choice = _rdm.Next(0, 100);
+                    double mantissa = (_rdm.NextDouble() * 2.0f) - 1.0f;
+                    if (choice + mantissa <= iaDifficulty)
+                    {
+                        enemy.special(player, enemy.force);
+                        iaLastAction = "Special attack from the enemy " + cpuString + " !";
+                        return;
+                    }
+                    else 
+                    {
+                        goto randomAction;
+                    }
+                }
+                else
+                {
+                    goto randomAction;
+                }
+            }
+        //
+        
+        // Action aléatoire : 1/3 defend && 2/3 attack
+        randomAction:
+            Random rdm = new Random();
+            int action = rdm.Next(1,4);
+
+            if (action == 3)
+            {
+                // Console.WriteLine("The enemy defends !");
+                enemy.Defend();
+                iaLastAction = cpuString + " defended !";
+            }
+            else
+            {
+                // Console.WriteLine("The enemy attacks you !");
+                player.getDamaged(enemy.force);
+                iaLastAction = cpuString + " attacked you!";
+            }
+            return;
+        //
 
     }
 }
-
-
-/*
-ia :
-
-rdm:  (((((
-
-Random rdm = new Random();
-action = rdm.Next(1,4);
-
-if (action == 3)
-{
-    defense;
-}
-else
-{
-    attack;
-}
-
-
-(%+ pour attack)
-
-)))))
-
-damager:
-
-if (vie = 1)
-{
-    special;
-}
-else
-{
-    rdm;
-}
-
-
-healer:
-
-if (vie <= 2)
-{
-    heal;
-}
-else
-{
-    rdm;
-}
-
-tank:
-
-if (vie >= 3)
-{
-    special
-}
-else
-{
-    rdm;
-}
-
-*/

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 
@@ -137,15 +138,50 @@ partial class Program
         Console.WriteLine(characterChoice);
 
         // Combat
-
-
         
-        if (characterChoice == 1)
+        Personaje player;
+        switch (characterChoice)
         {
-            var player = new Damager();
+            case 1:
+                player = new Damager();
+                break;
+            case 2:
+                player = new Healer();
+                break;
+            case 3:
+                player = new Tank();
+                break;
+            default:
+                player = new Tank();
+                break;
         }
-        
 
+        Random rdm = new Random();
+        
+        int enemyChoice = rdm.Next(1, 4);
+        Personaje ia;
+
+        switch (enemyChoice)
+        {
+            case 1:
+                ia = new Damager();
+                break;
+            case 2:
+                ia = new Healer();
+                break;
+            case 3:
+                ia = new Tank();
+                break;
+            default:
+                ia = new Tank();
+                break;
+        }
+
+        while (ia.pv > 0 && player.pv > 0)
+        {
+            Console.WriteLine(ia.pv + " / " + player.pv);
+            break;
+        }
         
        //
 
@@ -224,7 +260,7 @@ else
 
 damager:
 
-if (ennemy == 3 && vie = 1)
+if (vie = 1)
 {
     special;
 }

@@ -124,9 +124,14 @@ partial class Program
 
     int combatAction = 0;
 
+    int cpuChoice = 0;
+    string cpuString = "";
+    string playerString = "";
+
     void Interface()
     {
         // Boucle Menu principale
+        IAChoice(cpuChoice);
         while(characterChoice == -1)
         {
             Console.Clear();
@@ -153,14 +158,32 @@ partial class Program
         {
         case 1:
             player = new Damager();
-            enemy = new Tank(); //Just for testing purposes
+            playerString = "Damager";
             break;
         case 2:
             player = new Healer();
+            playerString = "Healer";
+            
             break;
         case 3:
             player = new Tank();
+            playerString = "Tank";
             break;
+        }
+        
+        switch(IAChoice(cpuChoice)){
+            case 1:
+                enemy = new Damager();
+                cpuString = "Damager";
+                break;
+            case 2:
+                enemy = new Healer();
+                cpuString = "Healer";
+                break;
+            case 3: 
+                enemy = new Tank();
+                cpuString = "Tank";
+                break;
         }
 
         cursorPosition = (0, 0);
@@ -175,15 +198,15 @@ partial class Program
                     Console.Clear();
                     buttonsPositions.Clear();
 
-                    Console.WriteLine("Joueur :");
+                    Console.WriteLine("Joueur : {0}", playerString);
                     Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
                     Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
-                    Console.WriteLine("\nEnemie :");
-                    if(enemy.pv > 0){
+                    Console.WriteLine("\nEnemie : {0}", cpuString);
+                    if(enemy.pv > 0){ //If the enemy isn't dead
                         Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
                         Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
                     }else{
-                        if(enemy.pv <= 0){
+                        if(enemy.pv <= 0){ //If the enemy dies (HP = 0)
                             Console.WriteLine("Enemy is dead!");
                             deadCPU = true;
                             endGame = true;
@@ -196,29 +219,24 @@ partial class Program
                         action = cursorPosition.x + 1;
 
 
-                            
-                    
+                    // Attack
+                    if(action == 1)
+                    {
+                        enemy.getDamaged(player.force);      
+                    }
 
-                
-               
-                // Attack
-                if(action == 1)
-                {
-                    enemy.getDamaged(player.force);      
-                }
+                    // Defend
+                    else if (action == 2)
+                    {
+                        player.Defend();
+                    }
 
-                // Defend
-                else if (action == 2)
-                {
-                    player.Defend();
+                    // Special attack
+                    else if (action == 3)
+                    {
+                        player.special(enemy, player.force);
+                    }
                 }
-
-                // Special attack
-                else if (action == 3)
-                {
-                    player.special(enemy, player.force);
-                }
-            }
             }
         }
     }
@@ -307,6 +325,15 @@ partial class Program
 
         return false;
     }
+
+    public int IAChoice(int choice){
+        Random rdm = new Random();
+        choice = rdm.Next(1,4);
+        return choice;
+        
+    }
+
+
 }
 
 

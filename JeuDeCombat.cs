@@ -50,6 +50,8 @@ class Personaje{
         this.isDefending = true;
     }
 
+    public virtual void special(Personaje e, int d){}
+
 
 }
 
@@ -66,7 +68,7 @@ class Damager : Personaje
         DamageReflected = 0;
     }
 
-    public void special(Personaje enemy, int damageReceive)
+    public override void special(Personaje enemy, int damageReceive)
     {
         base.getDamaged(damageReceive);
         enemy.getDamaged(damageReceive);
@@ -81,7 +83,7 @@ class Healer : Personaje
 
     public Healer() : base(_type, _pv, _force) {}
 
-    public void special()
+    public override void special(Personaje enemy, int d) //Parameters here are not used
     {
         base.getDamaged(-2);
     }
@@ -94,7 +96,7 @@ class Tank : Personaje
 
     public Tank() : base(_type, _pv, _force) {}
 
-    public void special(Personaje enemy, int force)
+    public override void special(Personaje enemy, int force)
     {
         base.getDamaged(1);
         enemy.getDamaged(1);
@@ -164,11 +166,12 @@ partial class Program
         cursorPosition = (0, 0);
         while(!endGame){
 
-            while(!deadPlayer)
+            while(!deadCPU || !deadPlayer)
             {
                 int action = -1;
                 while (action == -1)
                 {
+
                     Console.Clear();
                     buttonsPositions.Clear();
 
@@ -176,23 +179,9 @@ partial class Program
                     Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
                     Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
                     Console.WriteLine("\nEnemie :");
-                    Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
-                    Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
-                    Console.WriteLine("\n          Actions possibles:");
-                    Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
-                    
-                    if (WaitForInput())
-                        action = cursorPosition.x + 1;
-                }
-               
-                // Attack
-                if(action == 1)
-                {
-                    enemy.getDamaged(player.force);
                     if(enemy.pv > 0){
-                        Console.WriteLine("Damage dealt to the enemy: {0}",player.force);
-                        Console.WriteLine("Enemy health: {0}",enemy.pv);
-
+                        Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
+                        Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
                     }else{
                         if(enemy.pv <= 0){
                             Console.WriteLine("Enemy is dead!");
@@ -200,22 +189,44 @@ partial class Program
                             endGame = true;
                         }
                     }
+                    Console.WriteLine("\n          Actions possibles:");
+                    Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
+                    
+                    if (WaitForInput())
+                        action = cursorPosition.x + 1;
+
+
+                            
+                    
+
+                
+               
+                // Attack
+                if(action == 1)
+                {
+                    enemy.getDamaged(player.force);      
                 }
 
                 // Defend
                 else if (action == 2)
                 {
-
+                    player.Defend();
                 }
 
                 // Special attack
                 else if (action == 3)
                 {
-
+                    player.special(enemy, player.force);
                 }
+            }
             }
         }
     }
+
+            
+        
+    
+
 
     string Button((int x, int y) position, string label, bool disabled=false)
     {

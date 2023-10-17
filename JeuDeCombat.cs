@@ -120,6 +120,8 @@ partial class Program
     Personaje player = null;
     Personaje enemy = null;
 
+    int combatAction = 0;
+
     void Interface()
     {
         // Boucle Menu principale
@@ -183,7 +185,9 @@ partial class Program
                         action = cursorPosition.x + 1;
                 }
                
-                if(action == 1){
+                // Attack
+                if(action == 1)
+                {
                     enemy.getDamaged(player.force);
                     if(enemy.pv > 0){
                         Console.WriteLine("Damage dealt to the enemy: {0}",player.force);
@@ -193,16 +197,24 @@ partial class Program
                         if(enemy.pv <= 0){
                             Console.WriteLine("Enemy is dead!");
                             deadCPU = true;
+                            endGame = true;
                         }
                     }
                 }
+
+                // Defend
+                else if (action == 2)
+                {
+
+                }
+
+                // Special attack
+                else if (action == 3)
+                {
+
+                }
             }
         }
-        
-
-        
-       //
-
     }
 
     string Button((int x, int y) position, string label, bool disabled=false)

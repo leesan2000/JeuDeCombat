@@ -81,6 +81,10 @@ class Healer : Personaje
     public override void special(Personaje enemy, int d) //Parameters here are not used
     {
         base.getDamaged(-2);
+        if (base.pv > 4)
+        {
+            base.pv = 4;
+        }
     }
 }
 class Tank : Personaje
@@ -124,6 +128,9 @@ partial class Program
     string playerString = "";
     string iaLastAction = "Ready to fight !";
     public float iaDifficulty = 50f;
+
+    public int playerCooldownSpecial = 0;
+    public int enemyCooldownSpecial = 0;
 
     void Interface()
     {
@@ -213,6 +220,11 @@ partial class Program
         {
             while(!deadCPU && !deadPlayer)
             {
+                if (Convert.ToBoolean(playerCooldownSpecial))
+                    playerCooldownSpecial--;
+                if (Convert.ToBoolean(enemyCooldownSpecial))
+                    enemyCooldownSpecial--;
+
                 int action = -1;
                 while (action == -1)
                 {
@@ -231,7 +243,16 @@ partial class Program
 
                     // Special attack
                     else if (action == 3) // TODO : Add cooldown check in this logic
+                    if (!Convert.ToBoolean(playerCooldownSpecial))
+                    {
                         player.special(enemy, player.force);
+                        playerCooldownSpecial = 2;
+                    }
+                    else
+                    {
+                        action = -1;
+                        Console.WriteLine("Special unavailable.");
+                    }
                 }
 
                 if (TestGameOver())
@@ -352,6 +373,13 @@ partial class Program
 
     void DrawGame(int turn)
     {
+        // Possiblly null reference check
+        if(player == null)
+            player = new Tank();
+        if (enemy == null)
+            enemy = new Tank();
+        //
+
         Console.Clear();
         buttonsPositions.Clear();
 
@@ -367,7 +395,7 @@ partial class Program
         if (turn == 0)
         {
             Console.WriteLine("\n          Actions possibles:");
-            Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
+            Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", Convert.ToBoolean(playerCooldownSpecial)));
         }
         else
             Console.WriteLine("\n      ** L'ennemie réfléchie... **");
@@ -375,6 +403,13 @@ partial class Program
 
     bool TestGameOver()
     {
+        // Possiblly null reference check
+        if(player == null)
+            player = new Tank();
+        if (enemy == null)
+            enemy = new Tank();
+        //
+
         deadPlayer = player.pv <= 0;
         deadCPU = enemy.pv <= 0;
         return deadPlayer || deadCPU;
@@ -388,6 +423,13 @@ partial class Program
 
     void IATurn()
     {
+        // Possiblly null reference check
+        if(player == null)
+            player = new Tank();
+        if (enemy == null)
+            enemy = new Tank();
+        //
+
         Random rdm = new Random();
         DrawGame(1);
         Thread.Sleep(rdm.Next(1000, 3000));
@@ -396,10 +438,11 @@ partial class Program
         switch (enemy.type)
             {
             case 1:
-                if (enemy.pv == 1)
+                if (enemy.pv == 1 && !Convert.ToBoolean(enemyCooldownSpecial))
                 {
                     enemy.special(player, enemy.force);
                     iaLastAction = "Special attack from the enemy " + cpuString + " !";
+                    enemyCooldownSpecial = 2;
                     return;
                 }
                 else
@@ -408,13 +451,14 @@ partial class Program
                 }
 
             case 2:
-                if (enemy.pv <= 2)
+                if (enemy.pv <= 2 && !Convert.ToBoolean(enemyCooldownSpecial))
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
                     if (choice + mantissa <= iaDifficulty)
                     {
                         enemy.special(player, enemy.force);
+                        enemyCooldownSpecial = 2;
                         iaLastAction = "Special attack from the enemy " + cpuString + " !";
                         return;
                     }
@@ -429,13 +473,14 @@ partial class Program
                 }
 
             case 3:
-                if (enemy.pv >= 3)
+                if (enemy.pv >= 3 && !Convert.ToBoolean(enemyCooldownSpecial))
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
                     if (choice + mantissa <= iaDifficulty)
                     {
                         enemy.special(player, enemy.force);
+                        enemyCooldownSpecial = 2;
                         iaLastAction = "Special attack from the enemy " + cpuString + " !";
                         return;
                     }

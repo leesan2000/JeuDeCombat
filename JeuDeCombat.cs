@@ -250,18 +250,19 @@ partial class Program
                 Console.WriteLine("+------------------------------+");
                 Console.WriteLine("|           GAME OVER          |");
                 Console.WriteLine("+------------------------------+");
-                Console.WriteLine("\n     {0}", deadPlayer ? "Vous êtes mort !" : "Vous avez gagné !");
-                Console.WriteLine(" " + Button((0,0), "Menu principal") + " " + Button((1,0), "Quitter") );
+                Console.WriteLine("\n        {0}", deadPlayer ? "Vous êtes mort !" : "Vous avez gagné !");
+                Console.WriteLine("\n   " + Button((0,0), "Menu principal") + " " + Button((1,0), "Quitter") );
 
                 if (WaitForInput())
                 {
+                    characterChoice = -1;
+                    endGame = true;
+                    deadCPU = false;
+                    deadPlayer = false;
+                    cursorPosition = (0,0);
+
                     if (cursorPosition.x == 0)
-                    {
-                        deadPlayer = false;
-                        deadCPU = false;
-                    }
-                    else
-                        endGame = true;
+                        Interface();
                     
                     break;
                 }
@@ -369,9 +370,7 @@ partial class Program
             Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
         }
         else
-        {
             Console.WriteLine("\n      ** L'ennemie réfléchie... **");
-        }
     }
 
     bool TestGameOver()
@@ -385,7 +384,6 @@ partial class Program
         Random rdm = new Random();
         choice = rdm.Next(1,4);
         return choice;
-        
     }
 
     void IATurn()

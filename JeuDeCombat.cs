@@ -136,7 +136,7 @@ partial class Program
             Console.WriteLine("|         JEU DE COMBAT        |");
             Console.WriteLine("+------------------------------+");
             Console.WriteLine("\nUtilisez les flèche directionnelle \npour vous déplacez entre les options.");
-            Console.WriteLine("Appuyiez sur [Espace] ou [Entrer] \npour selectionner un bouton.");
+            Console.WriteLine("\nAppuyiez sur [Espace] ou [Entrer] \npour selectionner un bouton.");
             Console.WriteLine("\n             >OK<");
 
             if (WaitForInput())
@@ -153,7 +153,7 @@ partial class Program
             Console.WriteLine("+------------------------------+");
             Console.WriteLine("|          PERSONNAGES         |");
             Console.WriteLine("+------------------------------+");
-            Console.WriteLine("\nVeuillez choisiez votre classe:");
+            Console.WriteLine("\nVeuillez choisir votre classe:");
             Console.WriteLine("          " + Button((0,2), "Damager"));
             Console.WriteLine("          " + Button((0,1), "Healer"));
             Console.WriteLine("          " + Button((0,0), "Tank"));
@@ -207,81 +207,67 @@ partial class Program
         }
 
         cursorPosition = (0, 0);
-        while(!endGame){
 
+        // Fight loop
+        while(!endGame)
+        {
             while(!deadCPU && !deadPlayer)
             {
                 int action = -1;
                 while (action == -1)
                 {
-
-                    Console.Clear();
-                    buttonsPositions.Clear();
-
-                    
-
-
-                    if(player.pv > 0){ //If the player isn't dead
-                        Console.WriteLine("Joueur : {0}", playerString);
-                        Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
-                        Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
-                        Console.WriteLine("\nEnemie : {0}", cpuString);
-                    }else{
-                        if(player.pv < 0){ //If the player dies (HP = 0)
-                            Console.WriteLine("Player is dead!");
-                            deadPlayer = true;
-                            endGame = true;
-                        }
-                    }
-
-
-                    if(enemy.pv > 0){ //If the enemy isn't dead
-                        Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
-                        Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
-                        Console.WriteLine(iaLastAction);
-                    }else{
-                        if(enemy.pv <= 0){ //If the enemy dies (HP = 0)
-                            Console.WriteLine("Enemy is dead!");
-                            deadCPU = true;
-                            endGame = true;
-                            break;
-                        }
-                    }
-                    Console.WriteLine("\n          Actions possibles:");
-                    Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
+                    DrawGame(0);
                     
                     if (WaitForInput())
                         action = cursorPosition.x + 1;
 
-
                     // Attack
                     if(action == 1)
-                    {
                         enemy.getDamaged(player.force);      
-                    }
 
                     // Defend
                     else if (action == 2)
-                    {
                         player.Defend();
-                    }
 
                     // Special attack
-                    else if (action == 3)
-                    {
+                    else if (action == 3) // TODO : Add cooldown check in this logic
                         player.special(enemy, player.force);
-                    }
                 }
-                IATurn(enemy, player);
+
+                if (TestGameOver())
+                    break;
+
+                IATurn();
+                if (TestGameOver())
+                    break;
             }
-            endGame = true;
+            
+            while (true)
+            {
+                Console.Clear();
+                buttonsPositions.Clear();
+
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("|           GAME OVER          |");
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("\n     {0}", deadPlayer ? "Vous êtes mort !" : "Vous avez gagné !");
+                Console.WriteLine(" " + Button((0,0), "Menu principal") + " " + Button((1,0), "Quitter") );
+
+                if (WaitForInput())
+                {
+                    if (cursorPosition.x == 0)
+                    {
+                        deadPlayer = false;
+                        deadCPU = false;
+                    }
+                    else
+                        endGame = true;
+                    
+                    break;
+                }
+            }
         }
     }
-
-            
-        
-    
-
 
     string Button((int x, int y) position, string label, bool disabled=false)
     {
@@ -363,6 +349,38 @@ partial class Program
         return false;
     }
 
+    void DrawGame(int turn)
+    {
+        Console.Clear();
+        buttonsPositions.Clear();
+
+        Console.WriteLine(turn == 0 ? ">> Joueur : {0} <<" : "   Joueur : {0}", playerString);
+        Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
+        Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
+        Console.WriteLine(turn == 1 ? "\n>> Enemie : {0} <<" : "\n   Enemie : {0}", cpuString);
+
+        Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
+        Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
+        Console.WriteLine(iaLastAction);
+
+        if (turn == 0)
+        {
+            Console.WriteLine("\n          Actions possibles:");
+            Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
+        }
+        else
+        {
+            Console.WriteLine("\n      ** L'ennemie réfléchie... **");
+        }
+    }
+
+    bool TestGameOver()
+    {
+        deadPlayer = player.pv <= 0;
+        deadCPU = enemy.pv <= 0;
+        return deadPlayer || deadCPU;
+    }
+
     int IAChoice(int choice){
         Random rdm = new Random();
         choice = rdm.Next(1,4);
@@ -370,8 +388,12 @@ partial class Program
         
     }
 
-    void IATurn(Personaje enemy, Personaje player)
+    void IATurn()
     {
+        Random rdm = new Random();
+        DrawGame(1);
+        Thread.Sleep(rdm.Next(1000, 3000));
+
         // Prédisposition pour attaques spéciales ia else : randomAction
         switch (enemy.type)
             {
@@ -390,9 +412,8 @@ partial class Program
             case 2:
                 if (enemy.pv <= 2)
                 {
-                    Random _rdm = new Random();
-                    float choice = _rdm.Next(0, 100);
-                    double mantissa = (_rdm.NextDouble() * 2.0f) - 1.0f;
+                    float choice = rdm.Next(0, 100);
+                    double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
                     if (choice + mantissa <= iaDifficulty)
                     {
                         enemy.special(player, enemy.force);
@@ -412,9 +433,8 @@ partial class Program
             case 3:
                 if (enemy.pv >= 3)
                 {
-                    Random _rdm = new Random();
-                    float choice = _rdm.Next(0, 100);
-                    double mantissa = (_rdm.NextDouble() * 2.0f) - 1.0f;
+                    float choice = rdm.Next(0, 100);
+                    double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
                     if (choice + mantissa <= iaDifficulty)
                     {
                         enemy.special(player, enemy.force);
@@ -435,7 +455,6 @@ partial class Program
         
         // Action aléatoire : 1/3 defend && 2/3 attack
         randomAction:
-            Random rdm = new Random();
             int action = rdm.Next(1,4);
 
             if (action == 3)

@@ -8,19 +8,24 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\jolan\\.nuget\\packages\\": {}
+    "C:\\Users\\Dorito\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jolan\\Documents\\GitHub\\2\\JeuDeCombat\\JeuDeCombat.csproj",
+      "projectUniqueName": "C:\\Users\\Dorito\\Desktop\\Stuff\\Cours\\BaseCsharp\\JeuDeCombat\\JeuDeCombat.csproj",
       "projectName": "JeuDeCombat",
-      "projectPath": "C:\\Users\\jolan\\Documents\\GitHub\\2\\JeuDeCombat\\JeuDeCombat.csproj",
-      "packagesPath": "C:\\Users\\jolan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jolan\\Documents\\GitHub\\2\\JeuDeCombat\\obj\\",
+      "projectPath": "C:\\Users\\Dorito\\Desktop\\Stuff\\Cours\\BaseCsharp\\JeuDeCombat\\JeuDeCombat.csproj",
+      "packagesPath": "C:\\Users\\Dorito\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Dorito\\Desktop\\Stuff\\Cours\\BaseCsharp\\JeuDeCombat\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\jolan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Dorito\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -61,7 +66,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Microsoft.VisualBasic.FileIO;
 
 
 
@@ -49,7 +50,6 @@ class Personaje{
     {
         this.isDefending = true;
     }
-
 
 }
 
@@ -113,13 +113,6 @@ partial class Program
     public (int x, int y) cursorPosition = (0, 2);
     public int characterChoice = -1;
 
-    public bool endGame;
-    public bool deadPlayer;
-    public bool deadCPU;
-
-    Personaje player = null;
-    Personaje enemy = null;
-
     void Interface()
     {
         // Boucle Menu principale
@@ -144,17 +137,54 @@ partial class Program
         // characterChoice devrais correspondre a 1, 2 ou 3 (Damager, Healer ou tank)
         Console.WriteLine(characterChoice);
 
-
-
         // Combat
-
-
         
-        if (characterChoice == 1)
+        Personaje player;
+        switch (characterChoice)
         {
-            var player = new Damager();
+            case 1:
+                player = new Damager();
+                break;
+            case 2:
+                player = new Healer();
+                break;
+            case 3:
+                player = new Tank();
+                break;
+            default:
+                player = new Tank();
+                break;
+        }
+
+        Random rdm = new Random();
+        
+        int enemyChoice = rdm.Next(1, 4);
+        Personaje ia;
+
+        switch (enemyChoice)
+        {
+            case 1:
+                ia = new Damager();
+                break;
+            case 2:
+                ia = new Healer();
+                break;
+            case 3:
+                ia = new Tank();
+                break;
+            default:
+                ia = new Tank();
+                break;
+        }
+
+        while (ia.pv > 0 && player.pv > 0)
+        {
+            Console.WriteLine(ia.pv + " / " + player.pv);
+            break;
         }
         
+       //
+
     }
 
     string Button((int x, int y) position, string label)

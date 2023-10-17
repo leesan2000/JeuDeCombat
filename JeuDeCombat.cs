@@ -124,20 +124,35 @@ partial class Program
 
     void Interface()
     {
+        while (true)
+        {
+            Console.Clear();
+            buttonsPositions.Clear();
+
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|         JEU DE COMBAT        |");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("\nUtilisez les flèche directionnelle \npour vous déplacez entre les options.");
+            Console.WriteLine("Appuyiez sur [Espace] ou [Entrer] \npour selectionner un bouton.");
+            Console.WriteLine("\n             >OK<");
+
+            if (WaitForInput())
+                break;
+        }
+
         // Boucle Menu principale
         while(characterChoice == -1)
         {
             Console.Clear();
             buttonsPositions.Clear();
 
-            Console.WriteLine("################################");
-            Console.WriteLine("#         JEU DE COMBAT        #");
-            Console.WriteLine("#              v0.1            #");
-            Console.WriteLine("################################");
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|          PERSONNAGES         |");
+            Console.WriteLine("+------------------------------+");
             Console.WriteLine("\nVeuillez choisiez votre classe:");
-            Console.WriteLine("         " + Button((0,2), "Damager"));
-            Console.WriteLine("         " + Button((0,1), "Healer"));
-            Console.WriteLine("         " + Button((0,0), "Tank"));
+            Console.WriteLine("          " + Button((0,2), "Damager"));
+            Console.WriteLine("          " + Button((0,1), "Healer"));
+            Console.WriteLine("          " + Button((0,0), "Tank"));
 
             if (WaitForInput())
                 characterChoice = Math.Abs(cursorPosition.y - 3);

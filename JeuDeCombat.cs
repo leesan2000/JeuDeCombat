@@ -251,6 +251,8 @@ partial class Program
                     {
                         player.special(enemy, player.force);
                     }
+
+                    IATurn();
                 }
             }
         }
@@ -348,7 +350,10 @@ partial class Program
         
     }
 
+    public void IATurn()
+    {
 
+    }
 }
 
 

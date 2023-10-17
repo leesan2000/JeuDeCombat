@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/BK2AkfigR+aTIPNu+usA2GdFa5p3nY8O7LCfU6mLDAykAhmuQre1Qy9u58SqzCMs3ShRdrITh5JB1/F3xHrNA==",
+  "dgSpecHash": "bncJsXz1LSYNaKVCduSAWHy7ZgGkEZnvpP1/Ux2Ut6tod3i9+JJpE0ttbkdVjqUMtoO8+QNOsT9vQFxxzHipdA==",
   "success": true,
-  "projectFilePath": "/Users/leesan/Desktop/C# Base/Parte III/Jeu de combat/JeuDeCombat/JeuDeCombat.csproj",
+  "projectFilePath": "C:\\Users\\Dorito\\Desktop\\Stuff\\Cours\\BaseCsharp\\JeuDeCombat\\JeuDeCombat.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

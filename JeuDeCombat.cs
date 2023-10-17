@@ -141,14 +141,9 @@ partial class Program
                 characterChoice = Math.Abs(cursorPosition.y - 3);
         }
 
-        // characterChoice devrais correspondre a 1, 2 ou 3 (Damager, Healer ou tank)
-        Console.WriteLine(characterChoice);
-
 
 
         // Combat
-
-
         
         switch (characterChoice)
         {
@@ -164,14 +159,30 @@ partial class Program
             break;
         }
 
+        cursorPosition = (0, 0);
         while(!endGame){
 
-            while(!deadPlayer){
-                Console.WriteLine("Actions possibles:");
-                Console.WriteLine("1 - Attaquer");
-                Console.WriteLine("2 - Défendre");
-                Console.WriteLine("3 - Action spéciale");
-                int action = int.Parse(Console.ReadLine());
+            while(!deadPlayer)
+            {
+                int action = -1;
+                while (action == -1)
+                {
+                    Console.Clear();
+                    buttonsPositions.Clear();
+
+                    Console.WriteLine("Joueur :");
+                    Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
+                    Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
+                    Console.WriteLine("\nEnemie :");
+                    Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
+                    Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
+                    Console.WriteLine("\n          Actions possibles:");
+                    Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", true));
+                    
+                    if (WaitForInput())
+                        action = cursorPosition.x + 1;
+                }
+               
                 if(action == 1){
                     enemy.getDamaged(player.force);
                     if(enemy.pv > 0){
@@ -184,10 +195,6 @@ partial class Program
                             deadCPU = true;
                         }
                     }
-
-
-
-                    
                 }
             }
         }
@@ -198,19 +205,50 @@ partial class Program
 
     }
 
-    string Button((int x, int y) position, string label)
+    string Button((int x, int y) position, string label, bool disabled=false)
     {
         string labelDisplay = "";
 
         // Check if the button is selected
         bool selected = position == cursorPosition;
-        labelDisplay += selected ? ">" : " ";
+        labelDisplay += selected ? disabled ? "X" : ">" : " ";
         labelDisplay += label;
-        labelDisplay += selected ? "<" : " ";
+        labelDisplay += selected ? disabled ? "X" : "<" : " ";
 
         // Register it and return the display string 
         buttonsPositions.Add(position);
         return labelDisplay;
+    }
+
+    string Gauge(int value, int maxSize)
+    {
+        maxSize *= 2;
+        string gaugeDisplay = "";
+
+        // Add blocs
+        for (int i = 1; i < maxSize; i++)
+        {
+            // Overflow
+            if (i <= value && i == maxSize - 2)
+            {
+                gaugeDisplay += "+" + (value - (maxSize - 2));
+                break;
+            }
+
+            // Normal bloc
+            else if (i < value)
+                gaugeDisplay += "█";
+
+            // Even number
+            else if (i == value)
+                gaugeDisplay += value % 2 == 0 ? "▒" : "█";
+            
+            // Empty
+            else
+                gaugeDisplay += " ";
+        }
+        
+        return gaugeDisplay;
     }
 
     // Change the position of the cursor on the interface
@@ -235,6 +273,8 @@ partial class Program
                 nextPos.y--;
                 break;
             case "Spacebar":
+                return true;
+            case "Enter":
                 return true;
         }
         

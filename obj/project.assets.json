@@ -8,26 +8,24 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\jolan\\.nuget\\packages\\": {}
+    "/Users/leesan/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jolan\\Documents\\GitHub\\jeuDeCombat\\JeuDeCombat\\JeuDeCombat.csproj",
+      "projectUniqueName": "/Users/leesan/Desktop/C# Base/Parte III/Jeu de combat/JeuDeCombat/JeuDeCombat.csproj",
       "projectName": "JeuDeCombat",
-      "projectPath": "C:\\Users\\jolan\\Documents\\GitHub\\jeuDeCombat\\JeuDeCombat\\JeuDeCombat.csproj",
-      "packagesPath": "C:\\Users\\jolan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jolan\\Documents\\GitHub\\jeuDeCombat\\JeuDeCombat\\obj\\",
+      "projectPath": "/Users/leesan/Desktop/C# Base/Parte III/Jeu de combat/JeuDeCombat/JeuDeCombat.csproj",
+      "packagesPath": "/Users/leesan/.nuget/packages/",
+      "outputPath": "/Users/leesan/Desktop/C# Base/Parte III/Jeu de combat/JeuDeCombat/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\jolan\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/leesan/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -61,7 +59,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.201/RuntimeIdentifierGraph.json"
       }
     }
   }

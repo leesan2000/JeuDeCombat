@@ -150,11 +150,52 @@ partial class Program
 
 
         
-        if (characterChoice == 1)
+        switch (characterChoice)
         {
-            var player = new Damager();
+        case 1:
+            player = new Damager();
+            enemy = new Tank(); //Just for testing purposes
+            break;
+        case 2:
+            player = new Healer();
+            break;
+        case 3:
+            player = new Tank();
+            break;
+        }
+
+        while(!endGame){
+
+            while(!deadPlayer){
+                Console.WriteLine("Actions possibles:");
+                Console.WriteLine("1 - Attaquer");
+                Console.WriteLine("2 - Défendre");
+                Console.WriteLine("3 - Action spéciale");
+                int action = int.Parse(Console.ReadLine());
+                if(action == 1){
+                    enemy.getDamaged(player.force);
+                    if(enemy.pv > 0){
+                        Console.WriteLine("Damage dealt to the enemy: {0}",player.force);
+                        Console.WriteLine("Enemy health: {0}",enemy.pv);
+
+                    }else{
+                        if(enemy.pv <= 0){
+                            Console.WriteLine("Enemy is dead!");
+                            deadCPU = true;
+                        }
+                    }
+
+
+
+                    
+                }
+            }
         }
         
+
+        
+       //
+
     }
 
     string Button((int x, int y) position, string label)

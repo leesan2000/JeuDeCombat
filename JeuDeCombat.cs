@@ -110,30 +110,31 @@ partial class Program
         program.Interface();
     }
 
-    public List<(int x, int y)> buttonsPositions = new List<(int x, int y)>();
-    public (int x, int y) cursorPosition = (0, 2);
-    public int characterChoice = -1;
+    public List<(int x, int y)> buttonsPositions = new List<(int x, int y)>(); // List of all currently displayed buttons (this is to prevent the cursor from going OOB)
+    public (int x, int y) cursorPosition = (0, 2); // Determine the cursor position on the interface
+    public int characterChoice = -1; // Character choice in the character selection screen
 
-    public bool endGame;
-    public bool deadPlayer;
-    public bool deadCPU;
+    public bool endGame; // Determine if a game is active
+    public bool deadPlayer; // Determine if the player has enough HP to live
+    public bool deadCPU; // Determine if the AI has enough HP to live
 
     Personaje? player = null;
     Personaje? enemy = null;
 
-    int combatAction = 0;
+    int combatAction = 0; // Determine the action wanted in a combat by the player
 
-    int cpuChoice = 0;
-    string cpuString = "";
-    string playerString = "";
-    string iaLastAction = "Ready to fight !";
-    public float iaDifficulty = 50f;
+    int cpuChoice = 0; // Determine the action wanted in a combat by the AI
+    string cpuString = ""; // Nametag of the classe selected by the player
+    string playerString = ""; // Nametag of the classe selected by the player
+    string iaLastAction = "Ready to fight !"; // Label of the last action of the AI
+    public float iaDifficulty = 50f; // Difficuly of the AI
 
-    public int playerCooldownSpecial = 0;
-    public int enemyCooldownSpecial = 0;
+    public int playerCooldownSpecial = 0; // Determine the special cooldown of the player
+    public int enemyCooldownSpecial = 0; // Determine the special cooldown of the AI
 
     void Interface()
     {
+        // Boucle menu principal
         while (true)
         {
             Console.Clear();
@@ -150,7 +151,7 @@ partial class Program
                 break;
         }
 
-        // Boucle Menu principale
+        // Boucle choix du personnage
         IAChoice(cpuChoice);
         while(characterChoice == -1)
         {
@@ -169,10 +170,7 @@ partial class Program
                 characterChoice = Math.Abs(cursorPosition.y - 3);
         }
 
-
-
-        // Combat
-        
+        // Creation du joueur
         switch (characterChoice)
         {
             case 1:
@@ -194,6 +192,7 @@ partial class Program
                 break;
         }
         
+        // Creation de l'IA
         switch(IAChoice(cpuChoice)){
             case 1:
                 enemy = new Damager();
@@ -215,21 +214,26 @@ partial class Program
 
         cursorPosition = (0, 0);
 
-        // Fight loop
+        // Game loop
         while(!endGame)
         {
+            // Fight loop
             while(!deadCPU && !deadPlayer)
             {
-                if (Convert.ToBoolean(playerCooldownSpecial))
+                // Update specials cooldown
+                if (playerCooldownSpecial > 0)
                     playerCooldownSpecial--;
-                if (Convert.ToBoolean(enemyCooldownSpecial))
+                if (enemyCooldownSpecial > 0)
                     enemyCooldownSpecial--;
 
                 int action = -1;
-                while (action == -1)
+                while (action <= -1)
                 {
                     DrawGame(0);
-                    
+                    if (action == -2)
+                        Console.WriteLine("Special unavailable.");
+
+                    // Player Turn
                     if (WaitForInput())
                         action = cursorPosition.x + 1;
 
@@ -242,27 +246,25 @@ partial class Program
                         player.Defend();
 
                     // Special attack
-                    else if (action == 3) // TODO : Add cooldown check in this logic
-                    if (!Convert.ToBoolean(playerCooldownSpecial))
-                    {
-                        player.special(enemy, player.force);
-                        playerCooldownSpecial = 2;
-                    }
-                    else
-                    {
-                        action = -1;
-                        Console.WriteLine("Special unavailable.");
-                    }
+                    else if (action == 3)
+                        if (playerCooldownSpecial <= 0)
+                        {
+                            player.special(enemy, player.force);
+                            playerCooldownSpecial = 2;
+                        }
+                        else
+                            action = -2;
                 }
-
                 if (TestGameOver())
                     break;
 
+                // AI Turn
                 IATurn();
                 if (TestGameOver())
                     break;
             }
             
+            // Game over loop
             while (true)
             {
                 Console.Clear();
@@ -276,12 +278,16 @@ partial class Program
 
                 if (WaitForInput())
                 {
+                    // Reset game
                     characterChoice = -1;
-                    endGame = true;
+                    endGame = false;
                     deadCPU = false;
                     deadPlayer = false;
                     cursorPosition = (0,0);
+                    playerCooldownSpecial = 0;
+                    enemyCooldownSpecial = 0;
 
+                    // Call interface
                     if (cursorPosition.x == 0)
                         Interface();
                     
@@ -291,6 +297,7 @@ partial class Program
         }
     }
 
+    // Return selectable button that can be placed in a WriteLine
     string Button((int x, int y) position, string label, bool disabled=false)
     {
         string labelDisplay = "";
@@ -306,6 +313,7 @@ partial class Program
         return labelDisplay;
     }
 
+    // Return a level gauge that can be placed in a WriteLine
     string Gauge(int value, int maxSize)
     {
         maxSize *= 2;
@@ -344,6 +352,7 @@ partial class Program
         (int x, int y) nextPos = cursorPosition;
         string input = Console.ReadKey().Key.ToString();
 
+        // Check wich key was pressed
         switch (input)
         {
             case "RightArrow":
@@ -371,6 +380,7 @@ partial class Program
         return false;
     }
 
+    // Draw the game depending on the player turn
     void DrawGame(int turn)
     {
         // Possiblly null reference check
@@ -383,15 +393,18 @@ partial class Program
         Console.Clear();
         buttonsPositions.Clear();
 
+        // Player info
         Console.WriteLine(turn == 0 ? ">> Joueur : {0} <<" : "   Joueur : {0}", playerString);
         Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
         Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
-        Console.WriteLine(turn == 1 ? "\n>> Enemie : {0} <<" : "\n   Enemie : {0}", cpuString);
 
+        // Enemy info
+        Console.WriteLine(turn == 1 ? "\n>> Enemie : {0} <<" : "\n   Enemie : {0}", cpuString);
         Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
         Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
         Console.WriteLine(iaLastAction);
 
+        // Buttons
         if (turn == 0)
         {
             Console.WriteLine("\n          Actions possibles:");
@@ -401,6 +414,7 @@ partial class Program
             Console.WriteLine("\n      ** L'ennemie réfléchie... **");
     }
 
+    // Check if the game should end
     bool TestGameOver()
     {
         // Possiblly null reference check
@@ -415,12 +429,14 @@ partial class Program
         return deadPlayer || deadCPU;
     }
 
+    // Called to init the AI character choice
     int IAChoice(int choice){
         Random rdm = new Random();
         choice = rdm.Next(1,4);
         return choice;
     }
 
+    // Called when a AI make a move
     void IATurn()
     {
         // Possiblly null reference check
@@ -437,8 +453,8 @@ partial class Program
         // Prédisposition pour attaques spéciales ia else : randomAction
         switch (enemy.type)
             {
-            case 1:
-                if (enemy.pv == 1 && !Convert.ToBoolean(enemyCooldownSpecial))
+            case 1: // Damager
+                if (enemy.pv == 1 && enemyCooldownSpecial <= 0)
                 {
                     enemy.special(player, enemy.force);
                     iaLastAction = "Special attack from the enemy " + cpuString + " !";
@@ -450,8 +466,8 @@ partial class Program
                     goto randomAction;
                 }
 
-            case 2:
-                if (enemy.pv <= 2 && !Convert.ToBoolean(enemyCooldownSpecial))
+            case 2: // Healer
+                if (enemy.pv <= 2 && enemyCooldownSpecial <= 0)
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
@@ -472,8 +488,8 @@ partial class Program
                     goto randomAction;
                 }
 
-            case 3:
-                if (enemy.pv >= 3 && !Convert.ToBoolean(enemyCooldownSpecial))
+            case 3: // Tank
+                if (enemy.pv >= 3 && enemyCooldownSpecial <= 0)
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;

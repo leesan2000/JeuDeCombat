@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-
+using System.Threading;
 
 
 
@@ -127,7 +127,8 @@ partial class Program
     string cpuString = ""; // Nametag of the classe selected by the player
     string playerString = ""; // Nametag of the classe selected by the player
     string iaLastAction = "Ready to fight !"; // Label of the last action of the AI
-    public float iaDifficulty = 50f; // Difficuly of the AI
+    public float iaDifficulty = 50f; // Difficuly of the AI (Easy = 10, Medium = 25, Hard = 50)
+    public float difficultyChoice = -1;
 
     public int playerCooldownSpecial = 0; // Determine the special cooldown of the player
     public int enemyCooldownSpecial = 0; // Determine the special cooldown of the AI
@@ -148,6 +149,39 @@ partial class Program
             Console.WriteLine("\n             >OK<");
 
             if (WaitForInput())
+                break;
+        }
+
+        // Difficulty choice loop
+
+        while(difficultyChoice == -1){
+
+            Console.Clear();
+            buttonsPositions.Clear();
+            Console.WriteLine("\nVeuillez choisir la dificulté de l'IA");
+            Console.WriteLine("          " + Button((0,2), "Easy"));
+            Console.WriteLine("          " + Button((0,1), "Medium"));
+            Console.WriteLine("          " + Button((0,0), "Hard"));
+            
+
+
+
+
+            if(WaitForInput()){
+                difficultyChoice = Math.Abs(cursorPosition.y - 3);
+            }
+
+        }
+
+        switch(difficultyChoice){
+            case 1:
+                iaDifficulty = 10;
+                break;
+            case 2:
+                iaDifficulty = 45;
+                break;
+            case 3:
+                iaDifficulty = 70;
                 break;
         }
 
@@ -450,10 +484,20 @@ partial class Program
         DrawGame(1);
         Thread.Sleep(rdm.Next(1000, 3000));
 
+
+
+
+ 
+
         // Prédisposition pour attaques spéciales ia else : randomAction
         switch (enemy.type)
             {
             case 1: // Damager
+        
+                if(iaDifficulty == 10){ //Difficulty set to 10 (Easy) --> AI does random action and no special attacks
+                    goto randomAction;
+                }
+                
                 if (enemy.pv == 1 && enemyCooldownSpecial <= 0)
                 {
                     enemy.special(player, enemy.force);
@@ -467,11 +511,18 @@ partial class Program
                 }
 
             case 2: // Healer
+            
+                if(iaDifficulty == 10){ //IA Difficulty = 10 (Easy) --> AI does any action randomly, doesn't take anything into account
+                    goto randomAction;
+                } 
+                
                 if (enemy.pv <= 2 && enemyCooldownSpecial <= 0)
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
-                    if (choice + mantissa <= iaDifficulty)
+                    Console.WriteLine(choice + mantissa);
+                    if (choice + mantissa <= iaDifficulty) //If iaDifficulty is set to Medium (45) then there will be about 45% chances that the IA uses the special attack based on his HP
+                                                            //The same thing goes for Hard difficulty
                     {
                         enemy.special(player, enemy.force);
                         enemyCooldownSpecial = 2;
@@ -489,10 +540,16 @@ partial class Program
                 }
 
             case 3: // Tank
+        
+                if(iaDifficulty == 10){
+                    goto randomAction;
+                }
+                
                 if (enemy.pv >= 3 && enemyCooldownSpecial <= 0)
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
+                    Console.WriteLine(choice + mantissa);
                     if (choice + mantissa <= iaDifficulty)
                     {
                         enemy.special(player, enemy.force);

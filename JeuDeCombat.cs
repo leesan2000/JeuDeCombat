@@ -19,8 +19,12 @@ class Personaje{
     public int type;
     public int pv = 10;
     public int force = 0;
-
-    private bool isDefending = false;
+    public int specialCoolDown = 0;
+    public bool dead = false;
+    public string nameTag = "";
+    public int actionChoice = 0;
+    public bool isDefending = false;
+    
     
     public Personaje(int type, int pv, int force)
     {
@@ -32,7 +36,7 @@ class Personaje{
     public void getDamaged(int damage){
         if (!isDefending)
         {
-        this.pv -= damage;
+            this.pv -= damage;
         }
         else
         {
@@ -81,25 +85,21 @@ class Healer : Personaje
     public override void special(Personaje enemy, int d) //Parameters here are not used
     {
         base.getDamaged(-2);
-        if (base.pv > 4)
-        {
-            base.pv = 4;
-        }
+        base.pv = Math.Min(base.pv, 4);
     }
 }
 class Tank : Personaje
 {
     protected static int _type  = 3;
     protected static int _pv = 5;
-    protected static int _force = 1;  
+    protected static int _force = 1;
 
     public Tank() : base(_type, _pv, _force) {}
 
     public override void special(Personaje enemy, int force)
     {
         base.getDamaged(1);
-        enemy.getDamaged(1);
-        enemy.getDamaged(1);
+        base.force+=2; // Offset
     }
 }
 partial class Program
@@ -112,31 +112,31 @@ partial class Program
 
     public List<(int x, int y)> buttonsPositions = new List<(int x, int y)>(); // List of all currently displayed buttons (this is to prevent the cursor from going OOB)
     public (int x, int y) cursorPosition = (0, 2); // Determine the cursor position on the interface
+
+    // Choices
+    public int gamemodeChoice = -1; // Gamemode choice in the main menu screen
     public int characterChoice = -1; // Character choice in the character selection screen
+    public float difficultyChoice = -1; // Difficulty choice in the difficulty selection screen
+    public int playerChoice = 0;
+    public int enemyChoice = 0;
 
-    public bool endGame; // Determine if a game is active
-    public bool deadPlayer; // Determine if the player has enough HP to live
-    public bool deadCPU; // Determine if the AI has enough HP to live
 
+    // Players
     Personaje? player = null;
     Personaje? enemy = null;
 
-    int combatAction = 0; // Determine the action wanted in a combat by the player
 
-    int cpuChoice = 0; // Determine the action wanted in a combat by the AI
-    string cpuString = ""; // Nametag of the classe selected by the player
-    string playerString = ""; // Nametag of the classe selected by the player
-    string iaLastAction = "Ready to fight !"; // Label of the last action of the AI
+    // Game state
+    public bool endGame; // Determine if a game is active
     public float iaDifficulty = 50f; // Difficuly of the AI (Easy = 10, Medium = 25, Hard = 50)
-    public float difficultyChoice = -1;
-
-    public int playerCooldownSpecial = 0; // Determine the special cooldown of the player
-    public int enemyCooldownSpecial = 0; // Determine the special cooldown of the AI
+    string lastAction = "Ready to fight !"; // Label of the last action of the AI
+ 
 
     void Interface()
     {
         // Boucle menu principal
-        while (true)
+        cursorPosition = (0, 0);
+        while (gamemodeChoice == -1)
         {
             Console.Clear();
             buttonsPositions.Clear();
@@ -146,26 +146,25 @@ partial class Program
             Console.WriteLine("+------------------------------+");
             Console.WriteLine("\nUtilisez les flèche directionnelle \npour vous déplacez entre les options.");
             Console.WriteLine("\nAppuyiez sur [Espace] ou [Entrer] \npour selectionner un bouton.");
-            Console.WriteLine("\n             >OK<");
+            Console.WriteLine("\n   " + Button((0,0), "Mode solo") + " " + Button((1,0), "Mode spectateur"));
 
             if (WaitForInput())
-                break;
+                gamemodeChoice = cursorPosition.x + 1;
         }
 
         // Difficulty choice loop
-
+        cursorPosition = (0, 2);
         while(difficultyChoice == -1){
 
             Console.Clear();
             buttonsPositions.Clear();
+            Console.WriteLine("+------------------------------+");
+            Console.WriteLine("|           DIFFICULTÉ         |");
+            Console.WriteLine("+------------------------------+");
             Console.WriteLine("\nVeuillez choisir la dificulté de l'IA");
             Console.WriteLine("          " + Button((0,2), "Easy"));
             Console.WriteLine("          " + Button((0,1), "Medium"));
             Console.WriteLine("          " + Button((0,0), "Hard"));
-            
-
-
-
 
             if(WaitForInput()){
                 difficultyChoice = Math.Abs(cursorPosition.y - 3);
@@ -186,114 +185,149 @@ partial class Program
         }
 
         // Boucle choix du personnage
-        IAChoice(cpuChoice);
-        while(characterChoice == -1)
+        if (gamemodeChoice == 1)
         {
-            Console.Clear();
-            buttonsPositions.Clear();
+            cursorPosition = (0, 2);
+            while(characterChoice == -1)
+            {
+                Console.Clear();
+                buttonsPositions.Clear();
 
-            Console.WriteLine("+------------------------------+");
-            Console.WriteLine("|          PERSONNAGES         |");
-            Console.WriteLine("+------------------------------+");
-            Console.WriteLine("\nVeuillez choisir votre classe:");
-            Console.WriteLine("          " + Button((0,2), "Damager"));
-            Console.WriteLine("          " + Button((0,1), "Healer"));
-            Console.WriteLine("          " + Button((0,0), "Tank"));
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("|          PERSONNAGES         |");
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("\nVeuillez choisir votre classe:");
+                Console.WriteLine("          " + Button((0,2), "Damager"));
+                Console.WriteLine("          " + Button((0,1), "Healer"));
+                Console.WriteLine("          " + Button((0,0), "Tank"));
 
-            if (WaitForInput())
-                characterChoice = Math.Abs(cursorPosition.y - 3);
+                if (WaitForInput())
+                    characterChoice = Math.Abs(cursorPosition.y - 3);
+            }
         }
 
+
         // Creation du joueur
-        switch (characterChoice)
+        switch (gamemodeChoice == 2 ? IAChoice(playerChoice) : characterChoice)
         {
             case 1:
                 player = new Damager();
-                playerString = "Damager";
+                player.nameTag = "Damager";
                 break;
             case 2:
                 player = new Healer();
-                playerString = "Healer";
+                player.nameTag = "Healer";
                 
                 break;
             case 3:
                 player = new Tank();
-                playerString = "Tank";
+                player.nameTag = "Tank";
                 break;
             default:
                 player = new Tank();
-                playerString = "Tank";
+                player.nameTag = "Tank";
                 break;
         }
         
         // Creation de l'IA
-        switch(IAChoice(cpuChoice)){
+        switch(IAChoice(enemyChoice)){
             case 1:
                 enemy = new Damager();
-                cpuString = "Damager";
+                enemy.nameTag = "Damager";
                 break;
             case 2:
                 enemy = new Healer();
-                cpuString = "Healer";
+                enemy.nameTag = "Healer";
                 break;
             case 3: 
                 enemy = new Tank();
-                cpuString = "Tank";
+                enemy.nameTag = "Tank";
                 break;
             default:
                 enemy = new Tank();
-                cpuString = "Tank";
+                enemy.nameTag = "Tank";
                 break;
         }
 
-        cursorPosition = (0, 0);
+        if (gamemodeChoice == 2 && enemy.nameTag == player.nameTag)
+        {
+            player.nameTag += " 1";
+            enemy.nameTag += " 2";
+        }
 
         // Game loop
+        cursorPosition = (0, 0);
         while(!endGame)
         {
             // Fight loop
-            while(!deadCPU && !deadPlayer)
+            while(!enemy.dead && !player.dead)
             {
                 // Update specials cooldown
-                if (playerCooldownSpecial > 0)
-                    playerCooldownSpecial--;
-                if (enemyCooldownSpecial > 0)
-                    enemyCooldownSpecial--;
+                if (player.specialCoolDown > 0)
+                    player.specialCoolDown--;
+                if (enemy.specialCoolDown > 0)
+                    enemy.specialCoolDown--;
 
-                int action = -1;
-                while (action <= -1)
+                // Ask the player his choice if he is not in spectator mode
+                if (gamemodeChoice == 1)
                 {
-                    DrawGame(0);
-                    if (action == -2)
-                        Console.WriteLine("Special unavailable.");
+                    player.isDefending = false;
+                    int action = -1;
+                    while (action <= -1)
+                    {
+                        // Draw the board
+                        DrawGame(0);
+                        if (action == -2)
+                            Console.WriteLine("Special unavailable.");
 
-                    // Player Turn
-                    if (WaitForInput())
-                        action = cursorPosition.x + 1;
+                        // Player Turn
+                        if (WaitForInput())
+                            action = cursorPosition.x + 1;
 
-                    // Attack
-                    if(action == 1)
-                        enemy.getDamaged(player.force);      
 
-                    // Defend
-                    else if (action == 2)
-                        player.Defend();
+                        // Attack
+                        if(action == 1)
+                        {
+                            lastAction = "You dealt " + (enemy.isDefending ? "0" : player.force) + " damage to the enemy !";
+                            enemy.getDamaged(player.force);      
+                        }
 
-                    // Special attack
-                    else if (action == 3)
-                        if (playerCooldownSpecial <= 0)
+                        // Defend
+                        else if (action == 2)
+                        {
+                            player.Defend();
+                            lastAction = "You defend yourself.";
+                        }
+                            
+                        // Special attack
+                        else if (action == 3 && player.specialCoolDown <= 0)
                         {
                             player.special(enemy, player.force);
-                            playerCooldownSpecial = 2;
+                            player.specialCoolDown = 2;
+                            lastAction = "You make a " + player.nameTag + " special attack on the enemy !";
                         }
-                        else
+
+                        // Illegal move
+                        else if (action > -1)
                             action = -2;
+                    }
                 }
+
+                // Otherwise, let an AI make a move
+                else
+                {
+                    DrawGame(0);
+                    IATurn(player, enemy);
+                }
+                if (player.type == 3 && player.force > 1) player.force--;
                 if (TestGameOver())
                     break;
 
                 // AI Turn
-                IATurn();
+                DrawGame(1);
+                enemy.isDefending = false;
+                IATurn(enemy, player);
+                if (enemy.type == 3 && enemy.force > 1) enemy.force--;
                 if (TestGameOver())
                     break;
             }
@@ -307,40 +341,35 @@ partial class Program
                 Console.WriteLine("+------------------------------+");
                 Console.WriteLine("|           GAME OVER          |");
                 Console.WriteLine("+------------------------------+");
-                Console.WriteLine("\n        {0}", deadPlayer ? "Vous êtes mort !" : "Vous avez gagné !");
+                if (gamemodeChoice == 1)
+                    Console.WriteLine("\n        {0}", player.dead ? "Vous êtes mort !" : "Vous avez gagné !");
+                else
+                    Console.WriteLine("\n     {0}", player.dead ? "Le joueur 2 ("+enemy.nameTag+") à gagné !" : "Le joueur 1 ("+player.nameTag+") à gagné !");
                 Console.WriteLine("\n   " + Button((0,0), "Menu principal") + " " + Button((1,0), "Quitter") );
 
                 if (WaitForInput())
                 {
                     // Reset game
-                    characterChoice = -1;
-                    endGame = false;
-                    deadCPU = false;
-                    deadPlayer = false;
-                    cursorPosition = (0,0);
-                    playerCooldownSpecial = 0;
-                    enemyCooldownSpecial = 0;
-
-                    // Call interface
                     if (cursorPosition.x == 0)
-                        Interface();
-                    
-                    break;
+                    {
+                        new Program().Interface();
+                    }
+                    return;
                 }
             }
         }
     }
 
     // Return selectable button that can be placed in a WriteLine
-    string Button((int x, int y) position, string label, bool disabled=false)
+    string Button((int x, int y) position, string label, bool disabled=false, string cursorDisplay = "X")
     {
         string labelDisplay = "";
 
         // Check if the button is selected
         bool selected = position == cursorPosition;
-        labelDisplay += selected ? disabled ? "X" : ">" : " ";
+        labelDisplay += selected ? disabled ? cursorDisplay : ">" : " ";
         labelDisplay += label;
-        labelDisplay += selected ? disabled ? "X" : "<" : " ";
+        labelDisplay += selected ? disabled ? cursorDisplay : "<" : " ";
 
         // Register it and return the display string 
         buttonsPositions.Add(position);
@@ -428,21 +457,22 @@ partial class Program
         buttonsPositions.Clear();
 
         // Player info
-        Console.WriteLine(turn == 0 ? ">> Joueur : {0} <<" : "   Joueur : {0}", playerString);
+        Console.WriteLine(turn == 0 ? ">> Joueur : {0} <<" : "   Joueur : {0}", player.nameTag);
         Console.WriteLine(player.pv + " HP  | " + Gauge(player.pv, 10));
         Console.WriteLine(player.force + " DMG | " + Gauge(player.force, 10));
 
         // Enemy info
-        Console.WriteLine(turn == 1 ? "\n>> Enemie : {0} <<" : "\n   Enemie : {0}", cpuString);
+        Console.WriteLine(turn == 1 ? "\n>> Enemie : {0} <<" : "\n   Enemie : {0}", enemy.nameTag);
         Console.WriteLine(enemy.pv + " HP  | " + Gauge(enemy.pv, 10));
         Console.WriteLine(enemy.force + " DMG | " + Gauge(enemy.force, 10));
-        Console.WriteLine(iaLastAction);
+        Console.WriteLine("\n" + lastAction);
 
         // Buttons
+        if (gamemodeChoice == 2) return;
         if (turn == 0)
         {
             Console.WriteLine("\n          Actions possibles:");
-            Console.WriteLine(" " + Button((0, 0), "Attaquer") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", Convert.ToBoolean(playerCooldownSpecial)));
+            Console.WriteLine(" " + Button((0, 0), "Attaquer", enemy.isDefending, "!") + " "  + Button((1, 0), "Défendre") + " "  + Button((2, 0), "Action spécial", Convert.ToBoolean(player.specialCoolDown)));
         }
         else
             Console.WriteLine("\n      ** L'ennemie réfléchie... **");
@@ -451,16 +481,9 @@ partial class Program
     // Check if the game should end
     bool TestGameOver()
     {
-        // Possiblly null reference check
-        if(player == null)
-            player = new Tank();
-        if (enemy == null)
-            enemy = new Tank();
-        //
-
-        deadPlayer = player.pv <= 0;
-        deadCPU = enemy.pv <= 0;
-        return deadPlayer || deadCPU;
+        player.dead = player.pv <= 0;
+        enemy.dead = enemy.pv <= 0;
+        return player.dead || enemy.dead;
     }
 
     // Called to init the AI character choice
@@ -471,26 +494,14 @@ partial class Program
     }
 
     // Called when a AI make a move
-    void IATurn()
+    void IATurn(Personaje ia, Personaje opponent)
     {
-        // Possiblly null reference check
-        if(player == null)
-            player = new Tank();
-        if (enemy == null)
-            enemy = new Tank();
-        //
-
         Random rdm = new Random();
-        DrawGame(1);
         Thread.Sleep(rdm.Next(1000, 3000));
-
-
-
-
- 
+        ia.isDefending = false;
 
         // Prédisposition pour attaques spéciales ia else : randomAction
-        switch (enemy.type)
+        switch (ia.type)
             {
             case 1: // Damager
         
@@ -498,11 +509,11 @@ partial class Program
                     goto randomAction;
                 }
                 
-                if (enemy.pv == 1 && enemyCooldownSpecial <= 0)
+                if (ia.pv == 1 && ia.specialCoolDown <= 0)
                 {
-                    enemy.special(player, enemy.force);
-                    iaLastAction = "Special attack from the enemy " + cpuString + " !";
-                    enemyCooldownSpecial = 2;
+                    ia.special(opponent, ia.force);
+                    lastAction = "Special attack from " + ia.nameTag + " !";
+                    ia.specialCoolDown = 2;
                     return;
                 }
                 else
@@ -516,7 +527,7 @@ partial class Program
                     goto randomAction;
                 } 
                 
-                if (enemy.pv <= 2 && enemyCooldownSpecial <= 0)
+                if (ia.pv <= 2 && ia.specialCoolDown <= 0)
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
@@ -524,9 +535,9 @@ partial class Program
                     if (choice + mantissa <= iaDifficulty) //If iaDifficulty is set to Medium (45) then there will be about 45% chances that the IA uses the special attack based on his HP
                                                             //The same thing goes for Hard difficulty
                     {
-                        enemy.special(player, enemy.force);
-                        enemyCooldownSpecial = 2;
-                        iaLastAction = "Special attack from the enemy " + cpuString + " !";
+                        ia.special(opponent, ia.force);
+                        ia.specialCoolDown = 2;
+                        lastAction = "Special attack from " + ia.nameTag + " !";
                         return;
                     }
                     else 
@@ -544,17 +555,17 @@ partial class Program
                 if(iaDifficulty == 10){
                     goto randomAction;
                 }
-                
-                if (enemy.pv >= 3 && enemyCooldownSpecial <= 0)
+
+                if (ia.pv >= 3 && ia.specialCoolDown <= 0)
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
                     Console.WriteLine(choice + mantissa);
                     if (choice + mantissa <= iaDifficulty)
                     {
-                        enemy.special(player, enemy.force);
-                        enemyCooldownSpecial = 2;
-                        iaLastAction = "Special attack from the enemy " + cpuString + " !";
+                        ia.special(opponent, ia.force);
+                        ia.specialCoolDown = 2;
+                        lastAction = "Special attack from " + ia.nameTag + " !";
                         return;
                     }
                     else 
@@ -562,6 +573,14 @@ partial class Program
                         goto randomAction;
                     }
                 }
+
+                else if (ia.force > 1)
+                {
+                    opponent.getDamaged(ia.force);
+                    lastAction = ia.nameTag + " attacked !";
+                    return;
+                }
+
                 else
                 {
                     goto randomAction;
@@ -575,15 +594,15 @@ partial class Program
 
             if (action == 3)
             {
-                // Console.WriteLine("The enemy defends !");
-                enemy.Defend();
-                iaLastAction = cpuString + " defended !";
+                // Console.WriteLine("The opponent defends !");
+                ia.Defend();
+                lastAction = ia.nameTag + " defended !";
             }
             else
             {
-                // Console.WriteLine("The enemy attacks you !");
-                player.getDamaged(enemy.force);
-                iaLastAction = cpuString + " attacked you!";
+                // Console.WriteLine("The opponent attacks you !");
+                opponent.getDamaged(ia.force);
+                lastAction = ia.nameTag + " attacked !";
             }
             return;
         //

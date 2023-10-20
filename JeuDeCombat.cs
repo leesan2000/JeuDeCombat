@@ -745,3 +745,11 @@ partial class Program
 
     }
 }
+
+/*
+	Damger 	Healer 	Tank  1
+Damager 90	92	99		
+Healer	92	50	18
+Tank	5.5	94	83
+2
+*/

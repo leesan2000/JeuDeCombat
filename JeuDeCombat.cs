@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 
-
-
 /*
 Type :
 
@@ -55,7 +53,6 @@ class Personaje{
 
 
 }
-
 class Damager : Personaje
 {
     public int DamageReflected { get; set; } 
@@ -75,7 +72,6 @@ class Damager : Personaje
         enemy.getDamaged(damageReceive);
     }
 }
-
 class Healer : Personaje
 {
     protected static int _type  = 2;
@@ -107,6 +103,7 @@ class Tank : Personaje
         enemy.getDamaged(this.force); // cannot be defend
     }
 }
+
 partial class Program
 {
     static void Main()

@@ -18,6 +18,7 @@ Type :
 class Personaje{
     public int type;
     public int pv = 10;
+    public  int maxpv {get;} = 10;
     public int force = 0;
     public int specialCoolDown = 0;
     public bool dead = false;
@@ -26,10 +27,11 @@ class Personaje{
     public bool isDefending = false;
     
     
-    public Personaje(int type, int pv, int force)
+    public Personaje(int type, int pv, int maxpv, int force)
     {
         this.type = type;
         this.pv = pv;
+        this.maxpv = maxpv;
         this.force = force;
     }
 
@@ -62,7 +64,7 @@ class Damager : Personaje
     protected static int _pv = 3;
     protected static int _force = 2;  
 
-    public Damager() : base(_type, _pv, _force)
+    public Damager() : base(_type, _pv, _pv, _force)
     {
         DamageReflected = 0;
     }
@@ -80,7 +82,7 @@ class Healer : Personaje
     protected static int _pv = 4;
     protected static int _force = 1;  
 
-    public Healer() : base(_type, _pv, _force) {}
+    public Healer() : base(_type, _pv, _pv, _force) {}
 
     public override void special(Personaje enemy, int d) //Parameters here are not used
     {
@@ -94,12 +96,15 @@ class Tank : Personaje
     protected static int _pv = 5;
     protected static int _force = 1;
 
-    public Tank() : base(_type, _pv, _force) {}
+    public Tank() : base(_type, _pv, _pv, _force) {}
 
     public override void special(Personaje enemy, int force)
     {
+        // Take 1 damage
         base.getDamaged(1);
-        base.force+=2; // Offset
+        // deal 2 damage or only one if defending
+        enemy.getDamaged(this.force); // can be defend
+        enemy.getDamaged(this.force); // cannot be defend
     }
 }
 partial class Program
@@ -117,7 +122,6 @@ partial class Program
     public int gamemodeChoice = -1; // Gamemode choice in the main menu screen
     public int characterChoice = -1; // Character choice in the character selection screen
     public float difficultyChoice = -1; // Difficulty choice in the difficulty selection screen
-    public int playerChoice = 0;
     public int enemyChoice = 0;
 
 
@@ -128,7 +132,11 @@ partial class Program
 
     // Game state
     public bool endGame; // Determine if a game is active
-    public float iaDifficulty = 50f; // Difficuly of the AI (Easy = 10, Medium = 25, Hard = 50)
+    public int nb_games = 0; // current number of iteration for simulation
+    public float dizieme; // 1/10 du nombre de combats pour bar de chargement de la simulation
+    public int playerWins = 0;
+    public int enemyWins = 0;
+    public float iaDifficulty = 50f; // Difficuly of the AI (Easy = 10, Medium = 45, Hard = 70)
     string lastAction = "Ready to fight !"; // Label of the last action of the AI
  
 
@@ -146,7 +154,7 @@ partial class Program
             Console.WriteLine("+------------------------------+");
             Console.WriteLine("\nUtilisez les flèche directionnelle \npour vous déplacez entre les options.");
             Console.WriteLine("\nAppuyiez sur [Espace] ou [Entrer] \npour selectionner un bouton.");
-            Console.WriteLine("\n   " + Button((0,0), "Mode solo") + " " + Button((1,0), "Mode spectateur"));
+            Console.WriteLine("\n   " + Button((0,0), "Mode solo") + " " + Button((1,0), "Mode spectateur") + " " + Button((2,0), "Mode simulation"));
 
             if (WaitForInput())
                 gamemodeChoice = cursorPosition.x + 1;
@@ -185,7 +193,7 @@ partial class Program
         }
 
         // Boucle choix du personnage
-        if (gamemodeChoice == 1)
+        if (gamemodeChoice == 1 || gamemodeChoice == 3)
         {
             cursorPosition = (0, 2);
             while(characterChoice == -1)
@@ -208,7 +216,7 @@ partial class Program
 
 
         // Creation du joueur
-        switch (gamemodeChoice == 2 ? IAChoice(playerChoice) : characterChoice)
+        switch (gamemodeChoice == 2 ? IAChoice() : characterChoice)
         {
             case 1:
                 player = new Damager();
@@ -230,31 +238,124 @@ partial class Program
         }
         
         // Creation de l'IA
-        switch(IAChoice(enemyChoice)){
-            case 1:
-                enemy = new Damager();
-                enemy.nameTag = "Damager";
-                break;
-            case 2:
-                enemy = new Healer();
-                enemy.nameTag = "Healer";
-                break;
-            case 3: 
-                enemy = new Tank();
-                enemy.nameTag = "Tank";
-                break;
-            default:
-                enemy = new Tank();
-                enemy.nameTag = "Tank";
-                break;
+        if (gamemodeChoice != 3)
+        {
+            switch(IAChoice()){
+                case 1:
+                    enemy = new Damager();
+                    enemy.nameTag = "Damager";
+                    break;
+                case 2:
+                    enemy = new Healer();
+                    enemy.nameTag = "Healer";
+                    break;
+                case 3: 
+                    enemy = new Tank();
+                    enemy.nameTag = "Tank";
+                    break;
+                default:
+                    enemy = new Tank();
+                    enemy.nameTag = "Tank";
+                    break;
+            }
+        }
+        else
+        {
+            int enemyChoice = -1;
+            cursorPosition = (0, 2);
+            while(enemyChoice == -1)
+            {
+                Console.Clear();
+                buttonsPositions.Clear();
+
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("|          PERSONNAGES         |");
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("\nVeuillez choisir la classe de l'adversaire :");
+                Console.WriteLine("          " + Button((0,2), "Damager"));
+                Console.WriteLine("          " + Button((0,1), "Healer"));
+                Console.WriteLine("          " + Button((0,0), "Tank"));
+
+                if (WaitForInput())
+                    enemyChoice = Math.Abs(cursorPosition.y - 3);
+            }
+
+            switch(enemyChoice){
+                case 1:
+                    enemy = new Damager();
+                    enemy.nameTag = "Damager";
+                    break;
+                case 2:
+                    enemy = new Healer();
+                    enemy.nameTag = "Healer";
+                    break;
+                case 3: 
+                    enemy = new Tank();
+                    enemy.nameTag = "Tank";
+                    break;
+                default:
+                    enemy = new Tank();
+                    enemy.nameTag = "Tank";
+                    break;
+            }
         }
 
-        if (gamemodeChoice == 2 && enemy.nameTag == player.nameTag)
+        // Choose number of interations for simulation
+        int nb_simu = -1;
+        if (gamemodeChoice == 3){
+            cursorPosition = (0, 2);
+            while(nb_simu == -1)
+            {
+                Console.Clear();
+                buttonsPositions.Clear();
+
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("|          SIMULATION          |");
+                Console.WriteLine("+------------------------------+");
+                Console.WriteLine("\nVeuillez choisir le nombre de combats :");
+                Console.WriteLine("          " + Button((0,3), "10 000"));
+                Console.WriteLine("          " + Button((0,2), "1 000 000"));
+                Console.WriteLine("          " + Button((0,1), "1"));
+                Console.WriteLine("          " + Button((0,0), "Autre : "));
+
+                if (WaitForInput())
+                    nb_simu = Math.Abs(cursorPosition.y - 4);
+
+                switch (nb_simu)
+                {
+                    case 1:
+                        nb_simu = 10000;
+                        break;
+                    case 2:
+                        nb_simu = 1000000;
+                        break;
+                    case 3:
+                        nb_simu = 1;
+                        break;
+                    case 4:
+                        while (true)
+                        {
+                            // Nombre précis de simulation
+                            try{
+                            nb_simu = Int32.Parse(Console.ReadLine() + "");
+                            break;
+                            } catch {nb_simu = 4;}
+                        }
+                        break;
+                }
+            }
+            // 1/10 pour bar de chargement
+                dizieme = nb_simu / 10f;
+            //
+        }
+
+        if ( (gamemodeChoice == 2 || gamemodeChoice == 3) && enemy.nameTag == player.nameTag)
         {
             player.nameTag += " 1";
             enemy.nameTag += " 2";
         }
 
+    gameloop:
         // Game loop
         cursorPosition = (0, 0);
         while(!endGame)
@@ -304,7 +405,10 @@ partial class Program
                         {
                             player.special(enemy, player.force);
                             player.specialCoolDown = 2;
-                            lastAction = "You make a " + player.nameTag + " special attack on the enemy !";
+                            if (player.type != 2)
+                                lastAction = "You make a " + player.nameTag + " special attack on the enemy !";
+                            else
+                                lastAction = "You make a " + player.nameTag + " special attack on yourself !";
                         }
 
                         // Illegal move
@@ -316,20 +420,45 @@ partial class Program
                 // Otherwise, let an AI make a move
                 else
                 {
-                    DrawGame(0);
+                    if (gamemodeChoice != 3)
+                        DrawGame(0);
                     IATurn(player, enemy);
                 }
-                if (player.type == 3 && player.force > 1) player.force--;
                 if (TestGameOver())
                     break;
 
                 // AI Turn
-                DrawGame(1);
+                if (gamemodeChoice != 3)
+                    DrawGame(1);
                 enemy.isDefending = false;
                 IATurn(enemy, player);
-                if (enemy.type == 3 && enemy.force > 1) enemy.force--;
                 if (TestGameOver())
                     break;
+            }
+
+            if (gamemodeChoice == 3)
+            {
+                // iterate number of wins
+                nb_games++;
+                if (player.pv <= 0) enemyWins++;
+                if (enemy.pv <= 0) playerWins++;
+
+                // bar de chargement
+                if(nb_games == 0) Console.Clear();
+                if ((float)nb_games % dizieme == 0)
+                    Console.Write("█");
+
+                // loop
+                if (nb_games < nb_simu)
+                {
+                    // character reset
+                    player.pv = player.maxpv; player.dead = false;
+                    enemy.pv = enemy.maxpv; enemy.dead = false;
+
+                    // relaunch combat
+                    endGame = false;
+                    goto gameloop;
+                }
             }
             
             // Game over loop
@@ -343,6 +472,8 @@ partial class Program
                 Console.WriteLine("+------------------------------+");
                 if (gamemodeChoice == 1)
                     Console.WriteLine("\n        {0}", player.dead ? "Vous êtes mort !" : "Vous avez gagné !");
+                else if (gamemodeChoice == 3)
+                    Console.WriteLine("\n     {0}", playerWins >= enemyWins ? "Le joueur 1 ("+player.nameTag+") à gagné avec "+ (playerWins / (float)nb_simu * 100) +"% (" + playerWins + " combats) de victoires sur les "+ nb_simu + " combats!" : "Le joueur 2 ("+enemy.nameTag+") à gagné avec "+ (enemyWins / (float)nb_simu * 100) +"% (" + playerWins + " combats) de victoires sur les "+ nb_simu + " combats!");
                 else
                     Console.WriteLine("\n     {0}", player.dead ? "Le joueur 2 ("+enemy.nameTag+") à gagné !" : "Le joueur 1 ("+player.nameTag+") à gagné !");
                 Console.WriteLine("\n   " + Button((0,0), "Menu principal") + " " + Button((1,0), "Quitter") );
@@ -481,15 +612,19 @@ partial class Program
     // Check if the game should end
     bool TestGameOver()
     {
+        // Possiblly null reference check
+        if (player == null || enemy == null)
+            return false;
+
         player.dead = player.pv <= 0;
         enemy.dead = enemy.pv <= 0;
         return player.dead || enemy.dead;
     }
 
     // Called to init the AI character choice
-    int IAChoice(int choice){
+    int IAChoice(){
         Random rdm = new Random();
-        choice = rdm.Next(1,4);
+        int choice = rdm.Next(1,4);
         return choice;
     }
 
@@ -497,7 +632,8 @@ partial class Program
     void IATurn(Personaje ia, Personaje opponent)
     {
         Random rdm = new Random();
-        Thread.Sleep(rdm.Next(1000, 3000));
+        if (gamemodeChoice != 3)
+            Thread.Sleep(rdm.Next(1000, 3000));
         ia.isDefending = false;
 
         // Prédisposition pour attaques spéciales ia else : randomAction
@@ -531,13 +667,13 @@ partial class Program
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
-                    Console.WriteLine(choice + mantissa);
+                    // Console.WriteLine(choice + mantissa);
                     if (choice + mantissa <= iaDifficulty) //If iaDifficulty is set to Medium (45) then there will be about 45% chances that the IA uses the special attack based on his HP
                                                             //The same thing goes for Hard difficulty
                     {
                         ia.special(opponent, ia.force);
                         ia.specialCoolDown = 2;
-                        lastAction = "Special attack from " + ia.nameTag + " !";
+                        lastAction = "The enemy " + ia.nameTag + " healed himself !";
                         return;
                     }
                     else 
@@ -560,7 +696,7 @@ partial class Program
                 {
                     float choice = rdm.Next(0, 100);
                     double mantissa = (rdm.NextDouble() * 2.0f) - 1.0f;
-                    Console.WriteLine(choice + mantissa);
+                    // Console.WriteLine(choice + mantissa);
                     if (choice + mantissa <= iaDifficulty)
                     {
                         ia.special(opponent, ia.force);
